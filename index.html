@@ -18,9 +18,9 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
   <style>
     :root{
-      --bg:#0f0f0f;
-      --panel:#1a1a1a;
-      --panel2:#222222;
+      --bg:rgba(0,0,0,0);
+      --panel:rgba(15,15,15,0.72);
+      --panel2:rgba(25,25,25,0.75);
       --text:#f5f5f5;
       --muted:#999999;
       --accent:#ff6600;
@@ -43,10 +43,11 @@
     .topbar-ad{ display:none; }
     .topbar-ad-full{
       display:flex;
-      align-items:center;
+      align-items:stretch;
       gap:10px;
       width:100%;
-      padding:5px 16px;
+      min-height:68px;
+      padding:0;
       background:linear-gradient(90deg, rgba(255,102,0,.18), rgba(255,102,0,.14), rgba(255,102,0,.12));
       border-top:1px solid rgba(255,102,0,.10);
       border-bottom:1px solid rgba(255,102,0,.10);
@@ -56,6 +57,7 @@
       text-decoration:none;
       letter-spacing:.03em;
       animation: adShimmer 3s ease-in-out infinite;
+      overflow:hidden;
     }
     .ad-text-full{ flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .ad-cta{
@@ -192,14 +194,24 @@
       margin:0;
       font-family:'Space Grotesk', Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       color:var(--text);
-      background:
-        radial-gradient(circle at 12% 10%, rgba(255,102,0,.05), transparent 22%),
-        radial-gradient(circle at 88% 0%, rgba(255,102,0,.04), transparent 22%),
-        linear-gradient(180deg, #0f0f0f 0%, #111111 52%, #0f0f0f 100%);
+      background: #0f0f0f;
       overflow-x:hidden;
       overscroll-behavior:none;
       -webkit-font-smoothing:antialiased;
       text-rendering:optimizeLegibility;
+    }
+
+    /* Full-screen fixed background photo */
+    body::after{
+      content:'';
+      position:fixed;
+      inset:0;
+      z-index:-1;
+      background-image: url('https://i.postimg.cc/QMwyZQmj/Compress-20260415-211905-5250.jpg');
+      background-size:cover;
+      background-position:center center;
+      background-repeat:no-repeat;
+      background-attachment:fixed;
     }
 
     body::before{ display:none; }
@@ -555,12 +567,14 @@
       left:7px;
       top:7px;
       z-index:3;
-      font-size:10px;
-      font-weight:800;
-      color:#f5f5f5;
-      padding:3px 7px;
+      font-size:9px;
+      font-weight:900;
+      color:#fff;
+      padding:2px 6px;
       border-radius:999px;
-      background:rgba(0,0,0,.65);
+      background:rgba(0,0,0,.70);
+      border:1px solid rgba(255,102,0,.15);
+      letter-spacing:.03em;
     }
     .card-media{
       height:72%;
@@ -1302,8 +1316,8 @@
 
     /* ═══ ADMIN PANEL ═══ */
     #adminPanel { display:none; position:fixed; inset:0; z-index:300; background:#0f0f0f; flex-direction:column; overflow:hidden; }
-    .adm-nav { border:none; background:transparent; color:#999999; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:3px; padding:6px 2px; border-radius:12px; font-size:20px; transition:all .15s ease; border:1px solid transparent; width:100%; }
-    .adm-nav span { font-size:10px; font-weight:700; }
+    .adm-nav { border:none; background:transparent; color:#999999; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:2px; padding:4px 2px; border-radius:10px; font-size:14px; transition:all .15s ease; border:1px solid transparent; width:100%; min-width:0; }
+    .adm-nav span { font-size:9px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; }
     .adm-nav.active { color:#fff; background:rgba(255,102,0,.18); border-color:rgba(255,102,0,.25); }
     .adm-thumb-upload { width:100%; aspect-ratio:16/9; border:2px dashed rgba(255,102,0,.25); border-radius:16px; display:grid; place-items:center; cursor:pointer; background:rgba(255,102,0,.04); color:#999999; font-size:13px; transition:all .16s ease; overflow:hidden; position:relative; }
     .adm-thumb-upload:hover { border-color:rgba(255,102,0,.45); background:rgba(255,102,0,.08); }
@@ -1647,9 +1661,10 @@ backface-visibility:hidden;
           </div>
         </div>
         <!-- Gallery ratio tabs — compact pill style -->
-        <div id="galRatioTabs" style="display:none;padding:0 16px 10px;display:flex;gap:8px;">
-          <button id="galTab916" onclick="setGalRatio('9:16')" style="flex:1;padding:6px 10px;border:none;border-radius:999px;font-size:11px;font-weight:800;cursor:pointer;letter-spacing:.04em;transition:all .25s;background:linear-gradient(90deg,#ff6600,#cc4400);color:#fff;box-shadow:0 0 14px rgba(255,102,0,.45);">📱 9:16</button>
-          <button id="galTab169" onclick="setGalRatio('16:9')" style="flex:1;padding:6px 10px;border:none;border-radius:999px;font-size:11px;font-weight:800;cursor:pointer;letter-spacing:.04em;transition:all .25s;background:rgba(255,102,0,.12);border:1px solid rgba(255,102,0,.30);color:#ff8800;">🖥️ 16:9</button>
+        <div id="galRatioTabs" style="display:none;padding:0 16px 10px;display:flex;gap:8px;flex-wrap:wrap;">
+          <button id="galTab916" onclick="setGalRatio('9:16')" style="flex:1;padding:7px 10px;border:none;border-radius:999px;font-size:11px;font-weight:800;cursor:pointer;letter-spacing:.04em;transition:all .25s;background:linear-gradient(90deg,#ff6600,#cc4400);color:#fff;box-shadow:0 0 14px rgba(255,102,0,.45);">Beautiful Girl</button>
+          <button id="galTab169" onclick="setGalRatio('16:9')" style="flex:1;padding:7px 10px;border:none;border-radius:999px;font-size:11px;font-weight:800;cursor:pointer;letter-spacing:.04em;transition:all .25s;background:rgba(255,102,0,.12);border:1px solid rgba(255,102,0,.30);color:#ff8800;">Adult Hot</button>
+          <button id="galTab4k" onclick="setGalRatio('4k')" style="flex:1 1 100%;padding:7px 10px;border:none;border-radius:999px;font-size:11px;font-weight:800;cursor:pointer;letter-spacing:.04em;transition:all .25s;background:rgba(255,102,0,.12);border:1px solid rgba(255,102,0,.30);color:#ff8800;">4K Wallpaper</button>
         </div>
       </section>
 
@@ -1815,7 +1830,7 @@ backface-visibility:hidden;
       const hotCards = Array.from({length: 20}, (_, i) => ({
         id: `hot-${i}`,
         num: i + 1,
-        title: `Hot #${i + 1}`,
+        title: `Hot ${i + 1}`,
         type: 'hot',
         quality: 'HD',
         meta: 'Hot • HD',
@@ -1966,39 +1981,79 @@ backface-visibility:hidden;
       );
     }
 
-    // Short desc list for gallery cards
-    const _galDescs = [
-      'Beautiful girl 💕','Hot & Cute 🌸','Gorgeous look ✨','Stunning beauty 🔥','Sweet & Bold 💋',
-      'Classy vibes 👑','Wild side 🌙','Pure charm 🌺','Irresistible 💫','Soft & Sexy 🍑',
-      'Cute pose 🎀','Elegance 🌹','Fire look 🔥','Sweet dreams 💤','Eye candy 🍬'
-    ];
+    // Short, clean title pools — no emoji, no long phrases
+    const _hotTitleWordsA = ['Neon','Velvet','Midnight','Crimson','Lunar','Urban','Silent','Golden','Secret','Wild','Prime','Nova','Electric','Royal','Rapid','Crystal','Shadow','Bright','Frost','Amber','Steady','Swift','Blue','Vivid','Echo'];
+    const _hotTitleWordsB = ['Pulse','Drift','Heat','Glow','Rush','Wave','Storm','Mood','Shift','Beat','Spark','Motion','Fire','Echo','Arc','Bloom','Edge','Line','Flow','Flash','Zone','Tone','Rhythm','Trail','Frame'];
+    const _galleryTitleWordsA = ['Soft','Pure','Fresh','Bright','Calm','Neat','Sharp','Wide','Clean','Quiet','Sweet','Bold','Clear','Warm','Smooth','Open','Fine','Light','Dark','Prime','Simple','Rapid','Lush','Mellow'];
+    const _galleryTitleWordsB = ['Portrait','Frame','Shot','View','Look','Scene','Angle','Focus','Form','Style','Study','Cut','Mood','Layer','Pose','Glow','Space','Edge','Detail','Vision','Render','Line','Path','Drift'];
+
+    function buildTitlePool(wordsA, wordsB) {
+      const pool = [];
+      for (const a of wordsA) {
+        for (const b of wordsB) {
+          pool.push(a + ' ' + b);
+        }
+      }
+      return pool;
+    }
+
+    const _hotTitlePool = buildTitlePool(_hotTitleWordsA, _hotTitleWordsB);
+    const _galleryTitlePool = buildTitlePool(_galleryTitleWordsA, _galleryTitleWordsB);
+
+    function normalizeTitle(input, fallbackTitle) {
+      const t = (input || '').replace(/[\s\.·•,]+/g, ' ').trim();
+      if (!t || /^(hot|photo|movie)\s*#?\d*$/i.test(t) || /^[\-_.]+$/.test(t)) return fallbackTitle;
+      return t.split(/\s+/).slice(0, 10).join(' ');
+    }
+
+    function getAutoTitle(num) {
+      return _hotTitlePool[(Math.max(1, num) - 1) % _hotTitlePool.length];
+    }
+
+    function getGalleryTitle(num) {
+      return _galleryTitlePool[(Math.max(1, num) - 1) % _galleryTitlePool.length];
+    }
 
     function galleryCardHTML(item) {
       const num = item.num || 1;
       const ratio = item.ratio || '9:16';
-      const activeThumb = ratio === '16:9' ? (item.thumb16 || item.thumb || '') : (item.thumb || item.thumb16 || '');
-      const activeType = ratio === '16:9' ? (item.mediaType16 || item.mediaType || 'image') : (item.mediaType || item.mediaType16 || 'image');
+      const isLandscape = ratio === '16:9' || ratio === '4k';
+      const activeThumb = isLandscape ? (item.thumb16 || item.thumb || '') : (item.thumb || item.thumb16 || '');
+      const activeType = isLandscape ? (item.mediaType16 || item.mediaType || 'image') : (item.mediaType || item.mediaType16 || 'image');
       const hasPhoto = !!activeThumb;
       const mediaMarkup = hasPhoto
         ? (activeType === 'video'
             ? '<video src="' + activeThumb + '" autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;"></video>'
             : '<img src="' + activeThumb + '" alt="gallery media" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top center;pointer-events:none;filter:contrast(1.02) saturate(1.08);">')
         : '';
-      const shortDesc = item.desc && item.desc.trim() ? item.desc.trim() : _galDescs[(num - 1) % _galDescs.length];
+      const rawTitle = (item.title || '').trim();
+      const displayTitle = (!rawTitle || /^(photo|gallery)\s*#?\d*$/i.test(rawTitle)) ? getGalleryTitle(num) : rawTitle;
+      const shortDesc = (item.desc && item.desc.trim()) ? item.desc.trim() : 'Ready for view and download';
+      const ratioLabel = ratio === '9:16' ? 'Beautiful Girl' : (ratio === '16:9' ? 'Adult Hot' : '4K Wallpaper');
 
       const _isMob = typeof window !== 'undefined' && window.innerWidth <= 768;
-      const cardH = ratio === '16:9' ? (_isMob ? '56vw' : '45vw') : (_isMob ? '133vw' : '65vw');
-      const cardMaxH = ratio === '16:9' ? (_isMob ? '440px' : '520px') : (_isMob ? '620px' : '680px');
+      const cardH = ratio === '16:9' ? (_isMob ? '56vw' : '45vw') : (ratio === '4k' ? (_isMob ? '60vw' : '48vw') : (_isMob ? '133vw' : '65vw'));
+      const cardMaxH = ratio === '16:9' ? (_isMob ? '440px' : '520px') : (ratio === '4k' ? (_isMob ? '520px' : '600px') : (_isMob ? '620px' : '680px'));
 
       return `
-        <article class="card revealed is-visible" data-id="${item.id}" style="grid-column:1/-1;height:${cardH};max-height:${cardMaxH};cursor:${hasPhoto?'pointer':'default'};border-radius:22px;overflow:hidden;position:relative;display:block;margin-bottom:4px;transition:height .3s ease;" ${hasPhoto ? 'onclick="galOpenFullscreen(\'' + item.id + '\')"' : ''}>
+        <article class="card revealed is-visible" data-id="${item.id}" style="grid-column:1/-1;height:${cardH};max-height:${cardMaxH};cursor:${hasPhoto?'pointer':'default'};border-radius:22px;overflow:hidden;position:relative;display:block;margin-bottom:6px;transition:height .3s ease;" ${hasPhoto ? 'onclick="galOpenFullscreen(\'' + item.id + '\')"' : ''}>
           <div id="galMedia_${item.id}" style="position:absolute;inset:0;background-color:rgba(15,15,15,.6);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;cursor:pointer;" ${!hasPhoto ? 'onclick="galUploadClick(\'' + item.id + '\')"' : ''}>
-            ${hasPhoto ? mediaMarkup : '<div style="font-size:44px;opacity:.4;">📷</div><div style="font-size:13px;color:#999999;font-weight:800;letter-spacing:.06em;">Upload ' + ratio + ' Photo</div>'}
+            ${hasPhoto ? mediaMarkup : '<div style="font-size:44px;opacity:.4;">📷</div><div style="font-size:13px;color:#999999;font-weight:800;letter-spacing:.06em;">Upload ' + ratioLabel + '</div>'}
             <input type="file" id="galFile_${item.id}" accept="image/*" style="display:none;" onchange="galHandleUpload(event,'${item.id}')">
           </div>
-          ${hasPhoto ? `<div style="position:absolute;bottom:0;left:0;right:0;padding:10px 14px 14px;background:linear-gradient(transparent,rgba(0,0,0,.80));z-index:3;pointer-events:none;">
-            <span style="font-size:12px;color:#ffcc99;font-weight:600;">${shortDesc}</span>
-          </div>` : ''}
+          ${hasPhoto ? `
+            <div style="position:absolute;inset:auto 0 0 0;z-index:3;background:linear-gradient(180deg,transparent,rgba(0,0,0,.92));padding:12px 12px 12px;">
+              <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:10px;">
+                <div style="min-width:0;flex:1;">
+                  <div style="font-size:11px;color:#fff;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${displayTitle}</div>
+                  <div style="margin-top:4px;font-size:10px;color:#ffcc99;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${shortDesc}</div>
+                </div>
+                <div style="display:flex;gap:6px;flex-shrink:0;">
+                  <button type="button" onclick="event.stopPropagation();galOpenFullscreen('${item.id}')" style="border:none;border-radius:12px;padding:8px 11px;background:rgba(255,102,0,.18);border:1px solid rgba(255,102,0,.30);color:#fff;font-size:10px;font-weight:800;cursor:pointer;">View</button>
+                  <button type="button" onclick="event.stopPropagation();galDownload('${item.id}')" style="border:none;border-radius:12px;padding:8px 11px;background:rgba(255,102,0,.10);border:1px solid rgba(255,102,0,.22);color:#ffcc99;font-size:10px;font-weight:800;cursor:pointer;">Download</button>
+                </div>
+              </div>
+            </div>` : ''}
         </article>
       `;
     }
@@ -2007,8 +2062,9 @@ backface-visibility:hidden;
       const item = state.items.find(x => x.id === id);
       if (!item) return;
       const ratio = item.ratio || '9:16';
-      const url = ratio === '16:9' ? (item.thumb16 || item.thumb) : (item.thumb || item.thumb16);
-      const type = ratio === '16:9' ? (item.mediaType16 || 'image') : (item.mediaType || 'image');
+      const isLandscape = ratio === '16:9' || ratio === '4k';
+      const url = isLandscape ? (item.thumb16 || item.thumb) : (item.thumb || item.thumb16);
+      const type = isLandscape ? (item.mediaType16 || 'image') : (item.mediaType || 'image');
       if (!url) return;
       const existing = document.getElementById('galLightbox');
       if (existing) existing.remove();
@@ -2029,7 +2085,7 @@ backface-visibility:hidden;
       if (!item) {
         // placeholder slot — create it
         const num = parseInt(id.split('_').pop()) || 1;
-        item = { id, type:'gallery', num, title:'Photo #'+num, desc:'', quality:'HD', meta:'Gallery', thumb:null, thumb16:null, videoUrl:null, tags:['Gallery'], createdAt:Date.now() };
+        item = { id, type:'gallery', num, title:getGalleryTitle(num), desc:'', quality:'HD', meta:'Gallery', thumb:null, thumb16:null, videoUrl:null, tags:['Gallery'], createdAt:Date.now() };
         state.items.push(item);
       }
       item.ratio = ratio;
@@ -2053,10 +2109,10 @@ backface-visibility:hidden;
       try {
         const url = await uploadToCloud(file);
         let item = state.items.find(x => x.id === id);
-        const ratio = item ? (item.ratio || (id.startsWith('gal16_') ? '16:9' : '9:16')) : (id.startsWith('gal16_') ? '16:9' : '9:16');
+        const ratio = item ? (item.ratio || ((id.startsWith('gal16_') || id.startsWith('gal4k_')) ? '16:9' : '9:16')) : ((id.startsWith('gal16_') || id.startsWith('gal4k_')) ? '16:9' : '9:16');
         if (item) {
           item.ratio = ratio;
-          if (ratio === '16:9') {
+          if (ratio === '16:9' || ratio === '4k') {
             item.thumb16 = url;
             item.mediaType16 = 'image';
           } else {
@@ -2065,7 +2121,7 @@ backface-visibility:hidden;
           }
         } else {
           const num = parseInt(id.split('_').pop()) || 1;
-          const newItem = { id, type:'gallery', num, title:'Photo #'+num, desc:'', quality:'HD', meta:'Gallery', thumb:null, thumb16:null, ratio, videoUrl:null, tags:['Gallery'], createdAt:Date.now(), mediaType:'image', mediaType16:'image' };
+          const newItem = { id, type:'gallery', num, title:getGalleryTitle(num), desc:'', quality:'HD', meta:'Gallery', thumb:null, thumb16:null, ratio, videoUrl:null, tags:['Gallery'], createdAt:Date.now(), mediaType:'image', mediaType16:'image' };
           if (ratio === '16:9') newItem.thumb16 = url; else newItem.thumb = url;
           state.items.push(newItem);
           item = newItem;
@@ -2087,7 +2143,7 @@ backface-visibility:hidden;
       const item = state.items.find(x => x.id === id);
       if (!item) return;
       const ratio = item.ratio || '9:16';
-      const url = ratio === '16:9' ? item.thumb16 : item.thumb;
+      const url = (ratio === '16:9' || ratio === '4k') ? (item.thumb16 || item.thumb) : item.thumb;
       if (!url) return;
       const a = document.createElement('a');
       a.href = url;
@@ -2110,16 +2166,17 @@ backface-visibility:hidden;
         'linear-gradient(160deg,#1e1c1a,#121110)',
       ];
       const bg = gradients[(num - 1) % gradients.length];
+      const previewTitle = type === 'hot' ? getAutoTitle(num) : ('Movie ' + num);
       return `
         <article class="card ph-card" data-phid="${pid}" data-lazy-card="1" style="min-height:219px;cursor:default;position:relative;overflow:hidden;">
-          <div class="card-top">${String(num).padStart(2,'0')}</div>
+          <div class="card-top">${num}</div>
           <div class="card-media ph-media" id="phMedia_${pid}" style="background:${bg};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:background .2s;" onclick="phUpload('${pid}','${type}')">
             <svg viewBox="0 0 24 24" style="width:32px;height:32px;opacity:.5;" fill="none" stroke="rgba(255,102,0,.8)" stroke-width="1.5"><path d="M3 16.5V19a2 2 0 002 2h14a2 2 0 002-2v-2.5M16 8l-4-4-4 4M12 4v12"/></svg>
             <div style="font-size:10px;color:#ff6600;font-weight:700;letter-spacing:.04em;">Upload Image</div>
             <input type="file" id="phFile_${pid}" accept="image/*" style="display:none;" onchange="phHandleUpload(event,'${pid}','${type}',${num})">
           </div>
           <div class="card-footer">
-            <h3 class="card-title">${type === 'hot' ? 'Hot' : 'Movie'} #${num}</h3>
+            <h3 class="card-title">${previewTitle}</h3>
             <div class="card-meta"><span style="color:var(--muted);">Tap to upload</span></div>
           </div>
         </article>
@@ -2217,10 +2274,14 @@ backface-visibility:hidden;
       // ── Hide hot cards with no thumbnail ──
       if (item.type === 'hot' && !isImg) return '';
 
-      // ── Auto-title: if title is blank, generic "Hot #N", or just a dot ──
+      // ── Auto-title: if title is blank or generic, generate a clean short title ──
       const _rawTitle = (item.title || '').trim();
-      const _isGenericTitle = !_rawTitle || _rawTitle === '.' || _rawTitle === ',' || /^hot\s*#?\d*$/i.test(_rawTitle);
-      const displayTitle = (item.type === 'hot' && _isGenericTitle) ? getAutoTitle(num) : (_rawTitle || getAutoTitle(num));
+      const _isGenericTitle = !_rawTitle || _rawTitle === '.' || _rawTitle === ',' || /^(hot|photo|movie)\s*#?\d*$/i.test(_rawTitle);
+      const displayTitle = item.type === 'gallery'
+        ? (_isGenericTitle ? getGalleryTitle(num) : _rawTitle)
+        : (item.type === 'hot'
+            ? (_isGenericTitle ? getAutoTitle(num) : _rawTitle)
+            : (_rawTitle || ('Item ' + num)));
 
       // Subtle per-card dark gradient variation
       const _ph = [
@@ -2247,7 +2308,7 @@ backface-visibility:hidden;
 
       return `
         <article class="card" data-id="${item.id}" data-lazy-card="1" style="border-color:${cardBorder};">
-          <div class="card-top">${String(num).padStart(2, '0')}</div>
+          <div class="card-top">${num}</div>
           ${seasonBadge}
           <div class="card-media" style="${thumbBgStyle}">${thumbImgTag}</div>
           <div class="card-footer">
@@ -2275,7 +2336,7 @@ backface-visibility:hidden;
       `;
     }
 
-    const PAGE_SIZE = 30;
+    const PAGE_SIZE = 50;
     let currentPage = 1;
 
     window.render = function render(resetPage = true) {
@@ -2295,43 +2356,43 @@ backface-visibility:hidden;
         grid.style.maxWidth = _isMobGrid ? '' : '480px';
         grid.style.margin = _isMobGrid ? '' : '0 auto';
         const ratio = state.galRatio || '9:16';
-        const prefix = ratio === '16:9' ? 'gal16_slot_' : 'gal_slot_';
+        const prefix = ratio === '16:9' ? 'gal16_slot_' : ratio === '4k' ? 'gal4k_slot_' : 'gal_slot_';
         const galItems = state.items.filter(i => i.type === 'gallery');
         const slots = [];
         for (let n = 1; n <= 100; n++) {
           const slotId = prefix + n;
           const existing = galItems.find(x =>
             x.id === slotId ||
-            (x.num === n && (ratio === '9:16' ? !x.id.startsWith('gal16_') : x.id.startsWith('gal16_'))) ||
+            (x.num === n && (ratio === '9:16' ? (!x.id.startsWith('gal16_') && !x.id.startsWith('gal4k_')) : (ratio === '4k' ? x.id.startsWith('gal4k_') : x.id.startsWith('gal16_')))) ||
             (ratio === '9:16' && x.num === n && x.id.startsWith('gallery-'))
           );
           if (existing) {
-            // Force ratio on existing item for display
             const clone = Object.assign({}, existing, { ratio, id: slotId });
             slots.push(clone);
           } else {
-            slots.push({ id: slotId, type: 'gallery', num: n, title: 'Photo #' + n, thumb: null, thumb16: null, ratio });
+            slots.push({ id: slotId, type: 'gallery', num: n, title: getGalleryTitle(n), thumb: null, thumb16: null, ratio });
           }
         }
-        // 2-column grid: show filled slots + next 2 empty slots (pair)
         const filledSlots = slots.filter(s => s.thumb);
-        const visibleSlots = filledSlots; // only filled photos
+        const visibleSlots = filledSlots;
 
         const t916 = document.getElementById('galTab916');
         const t169 = document.getElementById('galTab169');
+        const t4k = document.getElementById('galTab4k');
         if (t916) { t916.style.background = ratio==='9:16'?'linear-gradient(90deg,#ff6600,#cc4400)':'rgba(255,102,0,.12)'; t916.style.color = ratio==='9:16'?'#fff':'#ff8800'; t916.style.boxShadow = ratio==='9:16'?'0 0 14px rgba(255,102,0,.45)':'none'; t916.style.border = ratio==='9:16'?'none':'1px solid rgba(255,102,0,.30)'; }
         if (t169) { t169.style.background = ratio==='16:9'?'linear-gradient(90deg,#ff6600,#cc4400)':'rgba(255,102,0,.12)'; t169.style.color = ratio==='16:9'?'#fff':'#ff8800'; t169.style.boxShadow = ratio==='16:9'?'0 0 14px rgba(255,102,0,.45)':'none'; t169.style.border = ratio==='16:9'?'none':'1px solid rgba(255,102,0,.30)'; }
+        if (t4k) { t4k.style.background = ratio==='4k'?'linear-gradient(90deg,#ff6600,#cc4400)':'rgba(255,102,0,.12)'; t4k.style.color = ratio==='4k'?'#fff':'#ff8800'; t4k.style.boxShadow = ratio==='4k'?'0 0 14px rgba(255,102,0,.45)':'none'; t4k.style.border = ratio==='4k'?'none':'1px solid rgba(255,102,0,.30)'; }
         const galRatioDiv = document.getElementById('galRatioTabs');
         if (galRatioDiv) galRatioDiv.style.display = 'flex';
         grid.innerHTML = visibleSlots.map((slot, idx) => {
           const cardHtml = galleryCardHTML(slot);
           const isAfter5 = (idx + 1) % 5 === 0 && idx + 1 < slots.length;
           const bannerHtml = isAfter5 ? `
-            <div style="grid-column:1/-1;width:100%;padding:6px 0 10px;">
-              <div style="display:flex;align-items:center;gap:12px;padding:16px 20px;background:linear-gradient(90deg,rgba(255,102,0,.12),rgba(255,102,0,.10),rgba(255,102,0,.08));border:1px solid rgba(255,102,0,.18);border-radius:16px;color:#ff8800;font-size:14px;font-weight:800;letter-spacing:.05em;box-shadow:0 0 24px rgba(255,102,0,.08);">
-                <span style="font-size:22px;">🔥</span>
-                <span style="flex:1;">Premium Unlocked — Watch Exclusive Content</span>
-                <span style="font-size:12px;font-weight:900;color:#ff6600;background:rgba(255,102,0,.14);border:1px solid rgba(255,102,0,.28);padding:6px 16px;border-radius:999px;flex-shrink:0;">GET →</span>
+            <div style="grid-column:1/-1;width:100%;margin:0;padding:0;">
+              <div style="display:flex;align-items:stretch;gap:12px;min-height:140px;padding:18px 20px;background:linear-gradient(90deg,rgba(255,102,0,.14),rgba(255,102,0,.10),rgba(255,102,0,.08));border:1px solid rgba(255,102,0,.18);border-radius:18px;color:#ff8800;font-size:14px;font-weight:800;letter-spacing:.05em;box-shadow:0 0 24px rgba(255,102,0,.08);">
+                <div style="display:flex;align-items:center;font-size:24px;flex-shrink:0;">Banner</div>
+                <div style="flex:1;display:flex;align-items:center;">Premium unlocked banner</div>
+                <span style="display:flex;align-items:center;font-size:12px;font-weight:900;color:#ff6600;background:rgba(255,102,0,.14);border:1px solid rgba(255,102,0,.28);padding:8px 16px;border-radius:999px;flex-shrink:0;">GET →</span>
               </div>
             </div>
           ` : '';
@@ -2363,10 +2424,10 @@ backface-visibility:hidden;
 
       // Insert native banner after every 10 cards
       const adBanners = [
-        { icon:'🔥', text:'Premium Unlocked — Exclusive Content Watch Karo', cta:'GET →' },
-        { icon:'⚡', text:'HD Streaming — Zero Buffering. Upgrade Now!', cta:'JOIN →' },
-        { icon:'👑', text:'VIP Access — 4K Quality Sabke Liye Unlock', cta:'TRY →' },
-        { icon:'💎', text:'Premium Members ke liye Special Content Available', cta:'OPEN →' },
+        { icon:'Banner', text:'Premium unlocked content', cta:'GET →' },
+        { icon:'Speed', text:'HD streaming, no buffering', cta:'JOIN →' },
+        { icon:'VIP', text:'VIP access with 4K quality', cta:'TRY →' },
+        { icon:'Premium', text:'Special content for members', cta:'OPEN →' },
       ];
       let adIdx = 0;
       const cardsWithAds = visible.reduce((acc, item, i) => {
@@ -2431,7 +2492,7 @@ backface-visibility:hidden;
       let btns = '';
       for (let p = startP; p <= endP; p++) {
         const active = p === page;
-        btns += `<button onclick="window.gotoPage(${p})" style="min-width:56px;height:56px;padding:0 14px;border:none;border-radius:14px;font-size:19px;font-weight:${active?'900':'700'};cursor:pointer;transition:all .18s;letter-spacing:-.01em;${active
+        btns += `<button onclick="window.gotoPage(${p})" style="min-width:39px;height:39px;padding:0 10px;border:none;border-radius:10px;font-size:13px;font-weight:${active?'900':'700'};cursor:pointer;transition:all .18s;letter-spacing:-.01em;${active
           ? 'background:linear-gradient(135deg,#ff5500,#ff8800);color:#fff;box-shadow:0 0 0 2px rgba(255,102,0,.35),0 6px 20px rgba(255,102,0,.50);transform:scale(1.08);'
           : 'background:rgba(255,102,0,.10);border:1.5px solid rgba(255,102,0,.28);color:#ff8800;box-shadow:0 2px 8px rgba(0,0,0,.3);'}">${p}</button>`;
       }
@@ -2439,11 +2500,11 @@ backface-visibility:hidden;
       const prevDisabled = page <= 1;
       const nextDisabled = page >= total;
       return adHtml + `<div style="grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:10px;padding:16px 0 10px;flex-wrap:wrap;">
-        <button onclick="window.gotoPage(${page-1})" ${prevDisabled?'disabled':''} style="min-width:80px;height:56px;padding:0 18px;border:none;border-radius:14px;font-size:17px;font-weight:800;cursor:${prevDisabled?'not-allowed':'pointer'};transition:all .18s;${prevDisabled
+        <button onclick="window.gotoPage(${page-1})" ${prevDisabled?'disabled':''} style="min-width:56px;height:39px;padding:0 12px;border:none;border-radius:10px;font-size:12px;font-weight:800;cursor:${prevDisabled?'not-allowed':'pointer'};transition:all .18s;${prevDisabled
           ? 'background:rgba(255,102,0,.05);color:rgba(255,102,0,.25);border:1.5px solid rgba(255,102,0,.10);'
           : 'background:linear-gradient(135deg,#ff5500,#ff8800);color:#fff;box-shadow:0 0 0 2px rgba(255,102,0,.25),0 6px 22px rgba(255,102,0,.45);'}">‹ Prev</button>
         ${btns}
-        <button onclick="window.gotoPage(${page+1})" ${nextDisabled?'disabled':''} style="min-width:80px;height:56px;padding:0 18px;border:none;border-radius:14px;font-size:17px;font-weight:800;cursor:${nextDisabled?'not-allowed':'pointer'};transition:all .18s;${nextDisabled
+        <button onclick="window.gotoPage(${page+1})" ${nextDisabled?'disabled':''} style="min-width:56px;height:39px;padding:0 12px;border:none;border-radius:10px;font-size:12px;font-weight:800;cursor:${nextDisabled?'not-allowed':'pointer'};transition:all .18s;${nextDisabled
           ? 'background:rgba(255,102,0,.05);color:rgba(255,102,0,.25);border:1.5px solid rgba(255,102,0,.10);'
           : 'background:linear-gradient(135deg,#ff5500,#ff8800);color:#fff;box-shadow:0 0 0 2px rgba(255,102,0,.25),0 6px 22px rgba(255,102,0,.45);'}">Next ›</button>
       </div>`;
@@ -3871,9 +3932,9 @@ backface-visibility:hidden;
       <button onclick="closeAdmin()" style="width:36px;height:36px;border:none;border-radius:10px;background:rgba(255,255,255,.06);color:#fff;font-size:16px;cursor:pointer;">✕</button>
     </div>
     <!-- Scrollable content -->
-    <div id="adminContent" style="flex:1;overflow-y:auto;padding:16px;padding-bottom:90px;-webkit-overflow-scrolling:touch;"></div>
-    <!-- Bottom Nav (5 tabs) -->
-    <div style="position:fixed;bottom:0;left:0;right:0;z-index:10;background:rgba(2,10,18,.97);border-top:1px solid rgba(255,102,0,.14);backdrop-filter:blur(20px);display:grid;grid-template-columns:repeat(6,1fr);padding:6px 4px;gap:4px;">
+    <div id="adminContent" style="flex:1;overflow-y:auto;padding:16px;padding-bottom:16px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;"></div>
+    <!-- Bottom Nav (7 tabs) — flex:0 0 auto so it doesn't crush scroll area -->
+    <div style="flex:0 0 auto;background:rgba(2,10,18,.97);border-top:1px solid rgba(255,102,0,.14);backdrop-filter:blur(20px);display:grid;grid-template-columns:repeat(7,1fr);padding:5px 3px 6px;gap:3px;">
       <button class="adm-nav" data-atab="all" onclick="adminTab('all')">📹<span>All</span></button>
       <button class="adm-nav" data-atab="hot" onclick="adminTab('hot')">🔥<span>Hot</span></button>
       <button class="adm-nav" data-atab="embed" onclick="adminTab('embed')">🔗<span>Embed</span></button>
@@ -5332,44 +5393,254 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // ── ALL tab ───────────────────────────────────────────────────
+  // ── ALL tab — with long-press drag reorder ────────────────────
   function renderAdminAll() {
     const c = document.getElementById('adminContent');
-    const items = state.items;
     const typeIcon = {hot:'🔥', gallery:'🖼️', movie:'🎬', anime:'🎌'};
     c.innerHTML = '';
-    if (!items.length) {
+    if (!state.items.length) {
       c.innerHTML = '<div class="adm-empty">📭 Abhi koi content nahi.<br><br>Hot, Gallery ya Movie tab se add karo.</div>';
       return;
     }
+
+    // Working copy (ids order) — mutated during drag
+    let orderIds = state.items.map(x => x.id);
+
     const h = document.createElement('div');
     h.className = 'adm-section-head';
-    h.textContent = '📹 All Content (' + items.length + ')';
+    h.textContent = '📹 All Content (' + state.items.length + ')';
     c.appendChild(h);
+
+    const hint = document.createElement('div');
+    hint.style.cssText = 'font-size:10px;color:#ff6600;opacity:.7;text-align:center;padding:4px 0 8px;letter-spacing:.03em;';
+    hint.textContent = '✋ 1 second press karke kisi bhi video ko kheecho — position badlo';
+    c.appendChild(hint);
+
+    // Confirm button (hidden until reorder happens)
+    const confirmBtn = document.createElement('button');
+    confirmBtn.id = 'reorderConfirmBtn';
+    confirmBtn.style.cssText = 'display:none;width:100%;padding:14px;border:none;border-radius:16px;background:linear-gradient(90deg,#ff6600,#ff8800);color:#fff;font-size:14px;font-weight:900;letter-spacing:.05em;cursor:pointer;margin-bottom:12px;box-shadow:0 0 22px rgba(255,102,0,.45);transition:opacity .2s;';
+    confirmBtn.textContent = '✅ Confirm — Order Save Karo';
+    confirmBtn.onclick = () => {
+      // Rebuild state.items in new order
+      const idMap = {};
+      state.items.forEach(x => idMap[x.id] = x);
+      const newItems = orderIds.map(id => idMap[id]).filter(Boolean);
+      // Keep any items not in orderIds (shouldn't happen)
+      state.items.forEach(x => { if (!orderIds.includes(x.id)) newItems.push(x); });
+      state.items = newItems;
+      persist();
+      confirmBtn.style.display = 'none';
+      confirmBtn.textContent = '✅ Confirm — Order Save Karo';
+      toast('🎉 Order permanently save ho gaya!');
+      // Refresh numbering labels
+      list.querySelectorAll('[data-reorder-num]').forEach((el, i) => {
+        const id = el.dataset.reorderId;
+        const item = state.items.find(x => x.id === id);
+        el.querySelector('.reorder-num').textContent = '#' + String(i+1).padStart(2,'0');
+      });
+    };
+    c.appendChild(confirmBtn);
+
     const list = document.createElement('div');
-    list.style.cssText = 'display:grid;gap:8px;margin-top:10px;';
-    items.forEach((item, i) => {
+    list.id = 'reorderList';
+    list.style.cssText = 'display:grid;gap:8px;margin-top:4px;position:relative;';
+
+    function buildRow(item, num) {
       const row = document.createElement('div');
       row.className = 'adm-card-row';
+      row.dataset.reorderId = item.id;
+      row.dataset.reorderNum = num;
+      row.style.cssText = row.style.cssText + 'transition:transform .18s ease,box-shadow .18s ease,opacity .18s ease;position:relative;touch-action:none;user-select:none;-webkit-user-select:none;';
+
+      // Drag handle
+      const handle = document.createElement('div');
+      handle.style.cssText = 'width:28px;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;flex:0 0 auto;cursor:grab;padding:0 4px 0 0;opacity:.55;';
+      handle.innerHTML = '<div style="width:14px;height:2px;background:#ff6600;border-radius:2px;"></div><div style="width:14px;height:2px;background:#ff6600;border-radius:2px;"></div><div style="width:14px;height:2px;background:#ff6600;border-radius:2px;"></div>';
+
       const thumb = document.createElement('div');
       thumb.className = 'adm-card-thumb';
       thumb.style.cssText = adminThumbStyle(item.thumb);
+
       const info = document.createElement('div');
       info.style.cssText = 'flex:1;min-width:0;';
-      info.innerHTML = '<div style="font-size:12px;font-weight:700;color:#e0faff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">#'
-        + String(i+1).padStart(2,'0') + ' ' + (item.title || 'Untitled') + '</div>'
+      info.innerHTML = '<div style="font-size:12px;font-weight:700;color:#e0faff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"><span class="reorder-num">#' + String(num).padStart(2,'0') + '</span> ' + (item.title || 'Untitled') + '</div>'
         + '<div style="font-size:10px;color:#999999;margin-top:2px;">'
         + (typeIcon[item.type] || '') + ' ' + (item.type||'').toUpperCase()
         + (item.videoUrl ? ' • 🎥 Video' : '') + '</div>';
+
       const delBtn = document.createElement('button');
       delBtn.className = 'adm-del-btn';
       delBtn.textContent = '🗑️';
       delBtn.onclick = () => adminDeleteItem(item.id);
+
+      row.appendChild(handle);
       row.appendChild(thumb);
       row.appendChild(info);
       row.appendChild(delBtn);
-      list.appendChild(row);
-    });
+
+      // ── Long-press drag logic ────────────────────────────
+      let pressTimer = null;
+      let isDragging = false;
+      let ghost = null;
+      let startY = 0;
+      let ghostOffsetY = 0;
+      let placeholder = null;
+      let lastOverRow = null;
+      let _rowDragTouchMove = null;
+
+      function startDrag(clientY) {
+        isDragging = true;
+        if (navigator.vibrate) navigator.vibrate(30);
+        // Add touchmove listener only when drag actually starts
+        _rowDragTouchMove = (e) => { e.preventDefault(); onMove(e.touches[0].clientY); };
+        document.addEventListener('touchmove', _rowDragTouchMove, {passive: false});
+
+        const rect = row.getBoundingClientRect();
+        ghostOffsetY = clientY - rect.top;
+
+        // Create ghost clone
+        ghost = row.cloneNode(true);
+        ghost.style.cssText = 'position:fixed;left:' + rect.left + 'px;top:' + rect.top + 'px;width:' + rect.width + 'px;z-index:9999;pointer-events:none;opacity:.92;box-shadow:0 12px 40px rgba(255,102,0,.55),0 0 0 2px rgba(255,102,0,.45);border-radius:16px;transform:scale(1.03);transition:box-shadow .1s;background:rgba(20,20,20,.97);';
+        document.body.appendChild(ghost);
+
+        // Placeholder
+        placeholder = document.createElement('div');
+        placeholder.style.cssText = 'height:' + rect.height + 'px;border-radius:16px;background:rgba(255,102,0,.08);border:2px dashed rgba(255,102,0,.35);transition:height .15s ease;';
+        row.parentNode.insertBefore(placeholder, row);
+        row.style.display = 'none';
+
+        // Dim other rows
+        list.querySelectorAll('.adm-card-row').forEach(r => {
+          if (r !== row) r.style.opacity = '0.45';
+        });
+      }
+
+      // Fast auto-scroll state
+      let _autoScrollRAF = null;
+      function _stopAutoScroll() { if (_autoScrollRAF) { cancelAnimationFrame(_autoScrollRAF); _autoScrollRAF = null; } }
+      function _startAutoScroll(dir) {
+        _stopAutoScroll();
+        const scroller = document.getElementById('adminContent');
+        if (!scroller) return;
+        function step() {
+          if (!isDragging) { _stopAutoScroll(); return; }
+          scroller.scrollTop += dir * 22; // fast speed — 22px per frame
+          _autoScrollRAF = requestAnimationFrame(step);
+        }
+        _autoScrollRAF = requestAnimationFrame(step);
+      }
+
+      function onMove(clientY) {
+        if (!isDragging || !ghost) return;
+        ghost.style.top = (clientY - ghostOffsetY) + 'px';
+
+        // Fast auto-scroll when near top/bottom of viewport
+        const VH = window.innerHeight;
+        const ZONE = 110; // trigger zone px from edge
+        if (clientY < ZONE) _startAutoScroll(-1);
+        else if (clientY > VH - ZONE) _startAutoScroll(1);
+        else _stopAutoScroll();
+
+        // Find which row we're over
+        const rows = Array.from(list.querySelectorAll('.adm-card-row:not([style*="display: none"])'));
+        let targetRow = null;
+        let targetRect = null;
+        for (const r of rows) {
+          const rRect = r.getBoundingClientRect();
+          if (clientY >= rRect.top && clientY <= rRect.bottom) {
+            targetRow = r; targetRect = rRect; break;
+          }
+        }
+        if (!targetRow) {
+          // Above first or below last
+          const first = rows[0], last = rows[rows.length-1];
+          if (first && clientY < first.getBoundingClientRect().top) targetRow = first;
+          else if (last) targetRow = last;
+        }
+        if (targetRow && targetRow !== lastOverRow) {
+          lastOverRow = targetRow;
+          const isAbove = clientY < targetRow.getBoundingClientRect().top + targetRow.getBoundingClientRect().height / 2;
+          if (isAbove) targetRow.parentNode.insertBefore(placeholder, targetRow);
+          else targetRow.parentNode.insertBefore(placeholder, targetRow.nextSibling);
+        }
+      }
+
+      function endDrag() {
+        if (!isDragging) return;
+        isDragging = false;
+        clearTimeout(pressTimer);
+        _stopAutoScroll();
+        // Remove dynamic drag touchmove listener
+        if (_rowDragTouchMove) { document.removeEventListener('touchmove', _rowDragTouchMove); _rowDragTouchMove = null; }
+
+        if (ghost) { ghost.remove(); ghost = null; }
+        row.style.display = '';
+        if (placeholder) {
+          placeholder.parentNode.insertBefore(row, placeholder);
+          placeholder.remove(); placeholder = null;
+        }
+
+        // Restore opacity
+        list.querySelectorAll('.adm-card-row').forEach(r => r.style.opacity = '');
+
+        // Update orderIds from current DOM order
+        const newOrder = Array.from(list.querySelectorAll('.adm-card-row')).map(r => r.dataset.reorderId);
+        if (JSON.stringify(newOrder) !== JSON.stringify(orderIds)) {
+          orderIds = newOrder;
+          // Update numbering
+          list.querySelectorAll('.adm-card-row').forEach((r, i) => {
+            const numEl = r.querySelector('.reorder-num');
+            if (numEl) numEl.textContent = '#' + String(i+1).padStart(2,'0');
+          });
+          confirmBtn.style.display = 'block';
+          if (navigator.vibrate) navigator.vibrate([20, 30, 20]);
+        }
+        lastOverRow = null;
+      }
+
+      // Touch events
+      handle.addEventListener('touchstart', e => {
+        const t = e.touches[0];
+        startY = t.clientY;
+        pressTimer = setTimeout(() => startDrag(t.clientY), 500);
+      }, {passive: true});
+
+      // Passive listener on row only to cancel pressTimer on scroll (no preventDefault needed)
+      row.addEventListener('touchmove', e => {
+        if (pressTimer && !isDragging) {
+          if (Math.abs(e.touches[0].clientY - startY) > 8) { clearTimeout(pressTimer); pressTimer = null; }
+        }
+      }, {passive: true});
+
+      document.addEventListener('touchend', e => {
+        clearTimeout(pressTimer); pressTimer = null;
+        if (isDragging) endDrag();
+      }, {passive: true});
+
+      // Mouse events (desktop)
+      handle.addEventListener('mousedown', e => {
+        startY = e.clientY;
+        pressTimer = setTimeout(() => startDrag(e.clientY), 500);
+        e.preventDefault();
+      });
+      document.addEventListener('mousemove', e => {
+        if (pressTimer && !isDragging) {
+          if (Math.abs(e.clientY - startY) > 8) { clearTimeout(pressTimer); pressTimer = null; }
+          return;
+        }
+        if (!isDragging) return;
+        onMove(e.clientY);
+      });
+      document.addEventListener('mouseup', () => {
+        clearTimeout(pressTimer); pressTimer = null;
+        if (isDragging) endDrag();
+      });
+
+      return row;
+    }
+
+    state.items.forEach((item, i) => list.appendChild(buildRow(item, i + 1)));
     c.appendChild(list);
   }
 
@@ -5409,7 +5680,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const titleInput = document.createElement('input');
     titleInput.className = 'adm-input';
     titleInput.id = 'hotTitle';
-    titleInput.placeholder = 'Title — e.g. Hot #' + next;
+    titleInput.placeholder = 'Short title — e.g. Neon Pulse';
     form.appendChild(titleInput);
 
     // Cloudinary URL input
@@ -5659,24 +5930,58 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ── GALLERY tab ───────────────────────────────────────────────
-  function renderAdminGallery() {
+  // Gallery admin current sub-category
+  let galAdminCat = 'beautiful';
+  const GAL_CATS = [
+    { id: 'beautiful', label: 'Beautiful Girl', icon: '👸', tag: 'Beautiful Girl' },
+    { id: 'adult',     label: 'Adult Hot',      icon: '🥵', tag: 'Adult Hot' },
+    { id: '4k',        label: '4K Wallpaper',   icon: '🌄', tag: '4K Wallpaper' },
+  ];
+
+  function renderAdminGallery(cat) {
+    if (cat) galAdminCat = cat;
     const c = document.getElementById('adminContent');
-    const items = state.items.filter(i => i.type === 'gallery');
+    const activeCatObj = GAL_CATS.find(x => x.id === galAdminCat) || GAL_CATS[0];
+    // Filter: gallery items with matching tag
+    const allGal = state.items.filter(i => i.type === 'gallery');
+    const ALL_CAT_TAGS = GAL_CATS.map(x => x.tag);
+    const items = allGal.filter(i => {
+      const hasCatTag = (i.tags || []).some(t => ALL_CAT_TAGS.includes(t));
+      if (!hasCatTag) return galAdminCat === 'beautiful'; // untagged → Beautiful Girl
+      return (i.tags || []).includes(activeCatObj.tag);
+    });
     c.innerHTML = '';
 
+    // ── Category Tabs ──
+    const tabRow = document.createElement('div');
+    tabRow.style.cssText = 'display:flex;gap:8px;margin-bottom:14px;';
+    GAL_CATS.forEach(cat => {
+      const tb = document.createElement('button');
+      const isAct = cat.id === galAdminCat;
+      tb.style.cssText = 'flex:1;padding:9px 4px;border-radius:12px;border:1px solid ' +
+        (isAct ? 'rgba(255,102,0,.55)' : 'rgba(255,102,0,.15)') + ';background:' +
+        (isAct ? 'linear-gradient(135deg,rgba(255,102,0,.32),rgba(255,136,0,.18))' : 'rgba(255,102,0,.05)') +
+        ';color:' + (isAct ? '#fff' : '#999') + ';font-size:11px;font-weight:800;cursor:pointer;letter-spacing:.02em;transition:all .15s;';
+      tb.innerHTML = cat.icon + '<br><span style="font-size:9px;">' + cat.label + '</span>';
+      tb.onclick = () => renderAdminGallery(cat.id);
+      tabRow.appendChild(tb);
+    });
+    c.appendChild(tabRow);
+
+    // ── Add Photo form ──
     const h1 = document.createElement('div');
     h1.className = 'adm-section-head';
-    h1.textContent = '🖼️ Photo Upload Karo';
+    h1.textContent = activeCatObj.icon + ' ' + activeCatObj.label + ' — Photo Add Karo';
     c.appendChild(h1);
 
     const form = document.createElement('div');
-    form.style.cssText = 'display:grid;gap:10px;margin-bottom:20px;';
+    form.style.cssText = 'display:grid;gap:10px;margin-bottom:16px;';
 
     const photoData = document.createElement('input');
     photoData.className = 'adm-input';
     photoData.id = 'galPhotoData';
     photoData.type = 'url';
-    photoData.placeholder = '🖼️ Photo/Image URL paste karo (Cloudinary ya koi bhi direct link)';
+    photoData.placeholder = '🖼️ Photo/Image URL paste karo';
     photoData.oninput = () => {
       const val = photoData.value.trim();
       let prev = document.getElementById('galPhotoPreview');
@@ -5687,48 +5992,231 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const addBtn = document.createElement('button');
     addBtn.className = 'adm-btn';
-    addBtn.textContent = '➕ Add Photo';
-    addBtn.onclick = adminAddGallery;
+    addBtn.textContent = '➕ Add to ' + activeCatObj.label;
+    addBtn.onclick = () => adminAddGalleryWithTag(activeCatObj.tag);
     form.appendChild(addBtn);
-
     c.appendChild(form);
 
+    // ── Photos list with hold-to-drag reorder ──
     const h2 = document.createElement('div');
     h2.className = 'adm-section-head';
-    h2.textContent = 'Photos (' + items.length + ')';
+    h2.textContent = activeCatObj.icon + ' ' + activeCatObj.label + ' (' + items.length + ')';
     c.appendChild(h2);
 
-    const grid = document.createElement('div');
-    grid.className = 'adm-gallery-grid';
-    grid.style.marginTop = '10px';
+    const hint2 = document.createElement('div');
+    hint2.style.cssText = 'font-size:10px;color:#ff6600;opacity:.7;text-align:center;padding:4px 0 8px;letter-spacing:.03em;';
+    hint2.textContent = '✋ Photo ko 1 second press karke kheecho — position badlo';
+    c.appendChild(hint2);
+
+    // Confirm reorder btn (hidden initially)
+    const confirmBtn2 = document.createElement('button');
+    confirmBtn2.id = 'galReorderConfirmBtn';
+    confirmBtn2.style.cssText = 'display:none;width:100%;padding:13px;border:none;border-radius:14px;background:linear-gradient(90deg,#ff6600,#ff8800);color:#fff;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:10px;box-shadow:0 0 18px rgba(255,102,0,.4);';
+    confirmBtn2.textContent = '✅ Confirm — Order Save Karo';
+    confirmBtn2.onclick = () => {
+      // Rebuild state.items: move this category items in new order, rest unchanged
+      const catIds = Array.from(galList.querySelectorAll('[data-gal-id]')).map(el => el.dataset.galId);
+      const idMap = {};
+      state.items.forEach(x => idMap[x.id] = x);
+      // Remove old cat items, insert in new order at same position
+      const nonCat = state.items.filter(i => !(i.type === 'gallery' && (i.tags||[]).includes(activeCatObj.tag)));
+      const catOrdered = catIds.map(id => idMap[id]).filter(Boolean);
+      // Insert cat items back at their original position range
+      const firstIdx = state.items.findIndex(i => i.type === 'gallery' && (i.tags||[]).includes(activeCatObj.tag));
+      if (firstIdx >= 0) {
+        nonCat.splice(firstIdx, 0, ...catOrdered);
+        state.items = nonCat;
+      } else {
+        state.items = [...catOrdered, ...nonCat];
+      }
+      persist();
+      confirmBtn2.style.display = 'none';
+      toast('🎉 Order permanently save ho gaya!');
+      // Renumber
+      galList.querySelectorAll('[data-gal-id]').forEach((el, i) => {
+        const numEl = el.querySelector('.gal-reorder-num');
+        if (numEl) numEl.textContent = '#' + String(i+1).padStart(2,'0');
+      });
+    };
+    c.appendChild(confirmBtn2);
+
+    const galList = document.createElement('div');
+    galList.id = 'galReorderList';
+    galList.style.cssText = 'display:grid;gap:8px;margin-top:4px;';
 
     if (!items.length) {
-      grid.innerHTML = '<div class="adm-empty" style="grid-column:1/-1;">Abhi koi photo nahi</div>';
+      galList.innerHTML = '<div class="adm-empty">Abhi koi photo nahi is category mein</div>';
     } else {
       items.forEach((it, i) => {
-        const wrap = document.createElement('div');
-        wrap.className = 'adm-gal-item';
-
-        const img = document.createElement('img');
-        img.src = it.thumb;
-        img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:10px;';
-
-        const num = document.createElement('div');
-        num.className = 'adm-gal-num';
-        num.textContent = '#' + String(i + 1).padStart(2, '0');
-
-        const delBtn = document.createElement('button');
-        delBtn.style.cssText = 'position:absolute;top:4px;right:4px;width:22px;height:22px;border:none;border-radius:6px;background:rgba(200,0,0,.7);color:#fff;font-size:10px;cursor:pointer;display:grid;place-items:center;';
-        delBtn.textContent = '✕';
-        delBtn.onclick = () => adminDeleteItem(it.id);
-
-        wrap.appendChild(img);
-        wrap.appendChild(num);
-        wrap.appendChild(delBtn);
-        grid.appendChild(wrap);
+        const row = buildGalRow(it, i + 1, galList, confirmBtn2, activeCatObj);
+        galList.appendChild(row);
       });
     }
-    c.appendChild(grid);
+    c.appendChild(galList);
+  }
+
+  function buildGalRow(it, num, galList, confirmBtn2, activeCatObj) {
+    const row = document.createElement('div');
+    row.dataset.galId = it.id;
+    row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:8px 10px;background:rgba(255,102,0,.06);border:1px solid rgba(255,102,0,.14);border-radius:14px;touch-action:none;user-select:none;-webkit-user-select:none;position:relative;';
+
+    // Drag handle
+    const handle = document.createElement('div');
+    handle.style.cssText = 'width:24px;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;flex:0 0 auto;cursor:grab;opacity:.55;';
+    handle.innerHTML = '<div style="width:12px;height:2px;background:#ff6600;border-radius:2px;"></div><div style="width:12px;height:2px;background:#ff6600;border-radius:2px;"></div><div style="width:12px;height:2px;background:#ff6600;border-radius:2px;"></div>';
+
+    const thumb = document.createElement('img');
+    thumb.src = it.thumb || '';
+    thumb.style.cssText = 'width:52px;height:64px;object-fit:cover;border-radius:8px;flex:0 0 auto;background:#111;';
+
+    const info = document.createElement('div');
+    info.style.cssText = 'flex:1;min-width:0;';
+    info.innerHTML = '<div style="font-size:12px;font-weight:700;color:#e0faff;"><span class="gal-reorder-num">#' + String(num).padStart(2,'0') + '</span> ' + (it.title||'Photo') + '</div>'
+      + '<div style="font-size:10px;color:#999;margin-top:2px;">🖼️ GALLERY</div>';
+
+    const delBtn = document.createElement('button');
+    delBtn.className = 'adm-del-btn';
+    delBtn.textContent = '🗑️';
+    delBtn.onclick = () => adminDeleteItem(it.id);
+
+    row.appendChild(handle);
+    row.appendChild(thumb);
+    row.appendChild(info);
+    row.appendChild(delBtn);
+
+    // ── Hold-to-drag logic ──
+    let pressTimer = null, isDragging = false, ghost = null;
+    let startY = 0, ghostOffsetY = 0, placeholder = null, lastOverRow = null;
+    let _autoScrollRAF2 = null;
+    let _galDragTouchMove = null;
+    function _stopAS2() { if (_autoScrollRAF2) { cancelAnimationFrame(_autoScrollRAF2); _autoScrollRAF2 = null; } }
+    function _startAS2(dir) {
+      _stopAS2();
+      const scroller = document.getElementById('adminContent');
+      if (!scroller) return;
+      function step() {
+        if (!isDragging) { _stopAS2(); return; }
+        scroller.scrollTop += dir * 20;
+        _autoScrollRAF2 = requestAnimationFrame(step);
+      }
+      _autoScrollRAF2 = requestAnimationFrame(step);
+    }
+
+    function startDragGal(clientY) {
+      isDragging = true;
+      if (navigator.vibrate) navigator.vibrate(30);
+      // Add touchmove listener only when drag actually starts
+      _galDragTouchMove = (e) => { e.preventDefault(); onMoveGal(e.touches[0].clientY); };
+      document.addEventListener('touchmove', _galDragTouchMove, {passive: false});
+      const rect = row.getBoundingClientRect();
+      ghostOffsetY = clientY - rect.top;
+      ghost = row.cloneNode(true);
+      ghost.style.cssText = 'position:fixed;left:' + rect.left + 'px;top:' + rect.top + 'px;width:' + rect.width + 'px;z-index:9999;pointer-events:none;opacity:.92;box-shadow:0 12px 40px rgba(255,102,0,.55),0 0 0 2px rgba(255,102,0,.45);border-radius:14px;transform:scale(1.03);background:rgba(20,20,20,.97);';
+      document.body.appendChild(ghost);
+      placeholder = document.createElement('div');
+      placeholder.style.cssText = 'height:' + rect.height + 'px;border-radius:14px;background:rgba(255,102,0,.08);border:2px dashed rgba(255,102,0,.35);';
+      row.parentNode.insertBefore(placeholder, row);
+      row.style.display = 'none';
+      galList.querySelectorAll('[data-gal-id]').forEach(r => { if (r !== row) r.style.opacity = '0.45'; });
+    }
+
+    function onMoveGal(clientY) {
+      if (!isDragging || !ghost) return;
+      ghost.style.top = (clientY - ghostOffsetY) + 'px';
+      const VH = window.innerHeight;
+      if (clientY < 110) _startAS2(-1);
+      else if (clientY > VH - 110) _startAS2(1);
+      else _stopAS2();
+      const rows = Array.from(galList.querySelectorAll('[data-gal-id]:not([style*="display: none"])'));
+      let targetRow = null;
+      for (const r of rows) {
+        const rRect = r.getBoundingClientRect();
+        if (clientY >= rRect.top && clientY <= rRect.bottom) { targetRow = r; break; }
+      }
+      if (!targetRow) {
+        const first = rows[0], last = rows[rows.length-1];
+        if (first && clientY < first.getBoundingClientRect().top) targetRow = first;
+        else if (last) targetRow = last;
+      }
+      if (targetRow && targetRow !== lastOverRow) {
+        lastOverRow = targetRow;
+        const isAbove = clientY < targetRow.getBoundingClientRect().top + targetRow.getBoundingClientRect().height / 2;
+        if (isAbove) targetRow.parentNode.insertBefore(placeholder, targetRow);
+        else targetRow.parentNode.insertBefore(placeholder, targetRow.nextSibling);
+      }
+    }
+
+    function endDragGal() {
+      if (!isDragging) return;
+      isDragging = false;
+      clearTimeout(pressTimer);
+      _stopAS2();
+      // Remove dynamic drag touchmove listener
+      if (_galDragTouchMove) { document.removeEventListener('touchmove', _galDragTouchMove); _galDragTouchMove = null; }
+      if (ghost) { ghost.remove(); ghost = null; }
+      row.style.display = '';
+      if (placeholder) { placeholder.parentNode.insertBefore(row, placeholder); placeholder.remove(); placeholder = null; }
+      galList.querySelectorAll('[data-gal-id]').forEach(r => r.style.opacity = '');
+      // Check if order changed
+      const newOrder = Array.from(galList.querySelectorAll('[data-gal-id]')).map(r => r.dataset.galId);
+      galList.querySelectorAll('[data-gal-id]').forEach((r, i) => {
+        const numEl = r.querySelector('.gal-reorder-num');
+        if (numEl) numEl.textContent = '#' + String(i+1).padStart(2,'0');
+      });
+      confirmBtn2.style.display = 'block';
+      if (navigator.vibrate) navigator.vibrate([20,30,20]);
+      lastOverRow = null;
+    }
+
+    handle.addEventListener('touchstart', e => {
+      const t = e.touches[0]; startY = t.clientY;
+      pressTimer = setTimeout(() => startDragGal(t.clientY), 500);
+    }, {passive: true});
+    // Passive listener on row only to cancel pressTimer on scroll
+    row.addEventListener('touchmove', e => {
+      if (pressTimer && !isDragging) {
+        if (Math.abs(e.touches[0].clientY - startY) > 8) { clearTimeout(pressTimer); pressTimer = null; }
+      }
+    }, {passive: true});
+    document.addEventListener('touchend', e => {
+      clearTimeout(pressTimer); pressTimer = null;
+      if (isDragging) endDragGal();
+    }, {passive: true});
+    handle.addEventListener('mousedown', e => {
+      startY = e.clientY; pressTimer = setTimeout(() => startDragGal(e.clientY), 500); e.preventDefault();
+    });
+    document.addEventListener('mousemove', e => {
+      if (pressTimer && !isDragging) { if (Math.abs(e.clientY - startY) > 8) { clearTimeout(pressTimer); pressTimer = null; } return; }
+      if (!isDragging) return; onMoveGal(e.clientY);
+    });
+    document.addEventListener('mouseup', () => {
+      clearTimeout(pressTimer); pressTimer = null; if (isDragging) endDragGal();
+    });
+
+    return row;
+  }
+
+  // Add gallery photo with category tag
+  function adminAddGalleryWithTag(tag) {
+    const thumb = document.getElementById('galPhotoData').value.trim();
+    if (!thumb) { toast('Photo URL daalo!'); return; }
+    const galItems = state.items.filter(i => i.type === 'gallery');
+    let num = 1;
+    while (galItems.find(x => x.id === 'gal_slot_' + num)) num++;
+    const slotId = 'gal_slot_' + num;
+    state.items = state.items.filter(x => x.id !== slotId);
+    state.items.unshift({
+      id: slotId, type: 'gallery', num,
+      title: getGalleryTitle(num), desc: '', quality: 'HD',
+      meta: 'Gallery', thumb, thumb16: null, ratio: '9:16',
+      videoUrl: null, tags: [tag, 'Gallery'], createdAt: Date.now()
+    });
+    persist();
+    document.getElementById('galPhotoData').value = '';
+    const gpPrev = document.getElementById('galPhotoPreview');
+    if (gpPrev) gpPrev.style.display = 'none';
+    toast('✅ Photo add ho gaya! ' + tag + ' mein dikh rahi hai 🎉');
+    renderAdminGallery(galAdminCat);
   }
 
   // ── MOVIE tab ─────────────────────────────────────────────────
@@ -6318,12 +6806,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── Add functions ─────────────────────────────────────────────
   function adminAddHot() {
     const thumb = document.getElementById('hotThumbData').value;
-    const title = (document.getElementById('hotTitle').value || '').trim();
     const desc = (document.getElementById('hotDesc').value || '').trim();
-    if (!title) { toast('Title daalo!'); return; }
     const cloudUrl = (document.getElementById('hotCloudUrl').value || '').trim();
     const videoUrl = cloudUrl || null;
     const num = state.items.filter(i => i.type === 'hot').length + 1;
+    const rawTitle = (document.getElementById('hotTitle').value || '').trim();
+    const title = normalizeTitle(rawTitle, getAutoTitle(num));
     state.items.unshift({
       id: 'hot-' + Date.now(), type: 'hot', num, title,
       desc: desc || 'Hot content.', quality: 'HD', meta: 'Hot • HD',
@@ -6343,28 +6831,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function adminAddGallery() {
-    const thumb = document.getElementById('galPhotoData').value.trim();
-    if (!thumb) { toast('Photo URL daalo!'); return; }
-    // Find next available slot number for both 9:16 and 16:9
-    const galItems = state.items.filter(i => i.type === 'gallery');
-    // Find next free gal_slot_N
-    let num = 1;
-    while (galItems.find(x => x.id === 'gal_slot_' + num)) num++;
-    const slotId = 'gal_slot_' + num;
-    // Remove any old placeholder with same id if exists
-    state.items = state.items.filter(x => x.id !== slotId);
-    state.items.unshift({
-      id: slotId, type: 'gallery', num,
-      title: 'Photo #' + num, desc: '', quality: 'HD',
-      meta: 'Gallery', thumb, thumb16: null, ratio: '9:16',
-      videoUrl: null, tags: ['Gallery'], createdAt: Date.now()
-    });
-    persist();
-    document.getElementById('galPhotoData').value = '';
-    const gpPrev = document.getElementById('galPhotoPreview');
-    if (gpPrev) gpPrev.style.display = 'none';
-    toast('✅ Photo add ho gaya! Gallery mein dikh rahi hai 🎉');
-    renderAdminGallery();
+    adminAddGalleryWithTag((GAL_CATS.find(x => x.id === galAdminCat) || GAL_CATS[0]).tag);
   }
 
   function adminAddMovie() {
