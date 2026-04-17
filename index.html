@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="referrer" content="no-referrer" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="juicyads-site-verification" content="74f19ad58acda61e81a709617a2f1c70">
   <title>Neon Stream V2.8</title>
   <!-- Banner image preloads — fast first load -->
   <link rel="preload" as="image" href="https://i.postimg.cc/wMfZkzr2/IMG_20260413_201132.jpg" fetchpriority="high">
@@ -14,6 +13,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- JuicyAds Native Interstitials v1.0 -->
+  <script type="text/javascript" data-id="juicyads-native-ads" data-ad-zone="1115982" data-targets="a" src="https://js.juicyads.com/juicyads.native-ads.min.js"></script>
+
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
@@ -2771,6 +2773,7 @@ backface-visibility:hidden;
 
     // ── ANIME EPISODE SELECTOR + HOT PLAYER ──────────────────
     function openAnimePlayer(id) {
+      if (window.nsTrackVideoClick) window.nsTrackVideoClick();
       const item = state.items.find(x => x.id === id);
       if (!item) return;
 
@@ -3020,6 +3023,7 @@ backface-visibility:hidden;
     }
 
     function openPlayer(id) {
+      if (window.nsTrackVideoClick) window.nsTrackVideoClick();
       const item = state.items.find(x => x.id === id);
       if (!item) return;
       // Track watch history
@@ -7002,4 +7006,102 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   </script>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════
+   JUICYADS INTERSTITIAL SYSTEM
+   Time schedule: 30s→+10m→+15m→+25m→+35m→+40m→+1h→+2h→+3h→+4h→+5h
+   Click cycle  : show on clicks 1,3,5,7,10 — repeat every 10
+═══════════════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+
+  var TIME_DELAYS = [
+    30 * 1000,
+    10 * 60 * 1000,
+    15 * 60 * 1000,
+    25 * 60 * 1000,
+    35 * 60 * 1000,
+    40 * 60 * 1000,
+    1  * 60 * 60 * 1000,
+    2  * 60 * 60 * 1000,
+    3  * 60 * 60 * 1000,
+    4  * 60 * 60 * 1000,
+    5  * 60 * 60 * 1000
+  ];
+
+  /* click positions (in cycle of 10) jahan ad dikhega — 0 = 10th */
+  var SHOW_POS = { 1:1, 3:1, 5:1, 7:1, 0:1 };
+
+  var LS = 'ns_iad_v2';
+  function getState() { try { return JSON.parse(localStorage.getItem(LS)) || {}; } catch(e) { return {}; } }
+  function saveState(s) { try { localStorage.setItem(LS, JSON.stringify(s)); } catch(e) {} }
+
+  /* ── Core show function ── */
+  function showAd() {
+    try {
+      if (window.juicyadsShowInterstitial)                                { window.juicyadsShowInterstitial(); return; }
+      if (window.JuicyAds && typeof window.JuicyAds.show === 'function') { window.JuicyAds.show(); return; }
+      if (window.JuicyAds && typeof window.JuicyAds.showInterstitial === 'function') { window.JuicyAds.showInterstitial(); return; }
+      /* Fallback: re-inject script to re-trigger */
+      var old = document.getElementById('_jad_trig');
+      if (old) old.remove();
+      var s = document.createElement('script');
+      s.id = '_jad_trig';
+      s.type = 'text/javascript';
+      s.setAttribute('data-id', 'juicyads-native-ads');
+      s.setAttribute('data-ad-zone', '1115982');
+      s.setAttribute('data-targets', 'a');
+      s.src = 'https://js.juicyads.com/juicyads.native-ads.min.js?t=' + Date.now();
+      document.head.appendChild(s);
+    } catch(e) {}
+  }
+
+  /* ── Time-based schedule ── */
+  function initTimeSchedule() {
+    var st = getState();
+    var now = Date.now();
+    if (!st.sessionStart) { st.sessionStart = now; st.timeIdx = 0; saveState(st); }
+
+    var elapsed = now - st.sessionStart;
+    var idx = st.timeIdx || 0;
+    var accumulated = 0;
+    for (var i = 0; i < idx; i++) accumulated += TIME_DELAYS[i];
+    while (idx < TIME_DELAYS.length && accumulated + TIME_DELAYS[idx] <= elapsed) {
+      accumulated += TIME_DELAYS[idx]; idx++;
+    }
+    st.timeIdx = idx; saveState(st);
+
+    function scheduleNext() {
+      var s2 = getState();
+      var ci = s2.timeIdx || 0;
+      if (ci >= TIME_DELAYS.length) return;
+      var now2 = Date.now();
+      var elapsed2 = now2 - s2.sessionStart;
+      var accum2 = 0;
+      for (var j = 0; j < ci; j++) accum2 += TIME_DELAYS[j];
+      var delay = Math.max(0, accum2 + TIME_DELAYS[ci] - elapsed2);
+      setTimeout(function () {
+        showAd();
+        var s3 = getState();
+        s3.timeIdx = (s3.timeIdx || 0) + 1;
+        saveState(s3);
+        scheduleNext();
+      }, delay);
+    }
+    scheduleNext();
+  }
+
+  /* ── Click-based system ── */
+  var _clickCount = (function () { var s = getState(); return s.vidClicks || 0; })();
+
+  window.nsTrackVideoClick = function () {
+    _clickCount++;
+    var st = getState(); st.vidClicks = _clickCount; saveState(st);
+    if (SHOW_POS[_clickCount % 10] === 1) showAd();
+  };
+
+  initTimeSchedule();
+})();
+</script>
 </html>
