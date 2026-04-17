@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="referrer" content="no-referrer" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="juicyads-site-verification" content="74f19ad58acda61e81a709617a2f1c70">
   <title>Neon Stream V2.8</title>
   <!-- Banner image preloads — fast first load -->
   <link rel="preload" as="image" href="https://i.postimg.cc/wMfZkzr2/IMG_20260413_201132.jpg" fetchpriority="high">
@@ -13,8 +14,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <!-- Google IMA SDK for VAST ads -->
-  <script src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
@@ -1809,36 +1808,9 @@ backface-visibility:hidden;
                 <div class="ad-pill">Explore →</div>
               </div>
             </div>
-            <!-- Adsterra Native Banner -->
+            <!-- Ad Slot — Native Banner -->
             <div id="adsterra-native-wrap" style="width:100%;margin:0 0 10px 0;min-height:60px;">
-              <div id="container-f87907886d28938ef7c85e2052c5581f"></div>
             </div>
-            <script async="async" data-cfasync="false" src="https://pl29174038.profitablecpmratenetwork.com/f87907886d28938ef7c85e2052c5581f/invoke.js"></script>
-            <script>
-              (function(){
-                function refreshAdsterra(){
-                  var wrap = document.getElementById('container-f87907886d28938ef7c85e2052c5581f');
-                  if(!wrap) return;
-                  // Clear old ad
-                  wrap.innerHTML = '';
-                  // Re-inject script
-                  var s = document.createElement('script');
-                  s.async = true;
-                  s.setAttribute('data-cfasync','false');
-                  s.src = 'https://pl29174038.profitablecpmratenetwork.com/f87907886d28938ef7c85e2052c5581f/invoke.js?' + Date.now();
-                  wrap.parentNode.insertBefore(s, wrap);
-                  // Schedule next refresh: random 10s-70s range, not round numbers
-                  // Base random 10000-70000ms, then add 1500-4500ms offset so it never lands on 10/20/30... exactly
-                  var base = (Math.floor(Math.random() * 7) + 1) * 10000;       // 10000,20000,...,70000
-                  var offset = Math.floor(Math.random() * 3000) + 1500;          // +1500 to +4500ms
-                  setTimeout(refreshAdsterra, base + offset);
-                }
-                // First refresh after random 10-70s
-                var initBase = (Math.floor(Math.random() * 7) + 1) * 10000;
-                var initOffset = Math.floor(Math.random() * 3000) + 1500;
-                setTimeout(refreshAdsterra, initBase + initOffset);
-              })();
-            </script>
             <div class="ad-banner-wide" style="margin-top:10px;padding:10px 13px;border-radius:14px;">
               <div>
                 <div class="ad-label" style="font-size:8.5px;">Sponsored</div>
@@ -4426,99 +4398,162 @@ document.addEventListener('DOMContentLoaded', () => {
 // ── ExoClick VAST via Google IMA SDK ──
 (function() {
   var VAST_URL = 'https://s.magsrv.com/v1/vast.php?idzone=5903528';
-  var AD_TRIGGER_SEC = 300; // 5 minutes
+  var AD_INTERVAL_SEC = 300; // 5 minutes
 
-  var imaReady = false;
-  var adDisplayContainer, adsLoader, adsManager;
-  var adShownThisSession = false;
   var imaInitDone = false;
+  var displayContainerInitialized = false;
+  var adDisplayContainer = null;
+  var adsLoader = null;
+  var adsManager = null;
+
+  var adRequestPending = false;
+  var adPlaying = false;
+  var nextAdAt = AD_INTERVAL_SEC;
+  var adPollTimer = null;
 
   function getVid() { return document.getElementById('playerVideo'); }
   function getAdCont() { return document.getElementById('imaAdContainer'); }
 
+  function hideAdLayer() {
+    var adCont = getAdCont();
+    if (adCont) adCont.style.display = 'none';
+  }
+
+  function destroyAdsManager() {
+    if (adsManager) {
+      try { adsManager.destroy(); } catch (e) {}
+      adsManager = null;
+    }
+  }
+
+  function prepareAdContainer() {
+    if (displayContainerInitialized || !adDisplayContainer) return;
+    try {
+      adDisplayContainer.initialize();
+      displayContainerInitialized = true;
+    } catch (e) {
+      // Try again on the next valid user gesture.
+    }
+  }
+
   function initIMA() {
     if (imaInitDone) return;
     if (typeof google === 'undefined' || !google.ima) return;
-    imaInitDone = true;
+
     var vid = getVid();
     var adCont = getAdCont();
     if (!vid || !adCont) return;
 
     adDisplayContainer = new google.ima.AdDisplayContainer(adCont, vid);
     adsLoader = new google.ima.AdsLoader(adDisplayContainer);
-
     adsLoader.addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, onAdsManagerLoaded, false);
     adsLoader.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, onAdError, false);
-    imaReady = true;
+    imaInitDone = true;
+  }
+
+  function armNextAdFromCurrentTime() {
+    var vid = getVid();
+    var now = vid && isFinite(vid.currentTime) ? vid.currentTime : 0;
+    nextAdAt = Math.max(nextAdAt + AD_INTERVAL_SEC, now + AD_INTERVAL_SEC);
+    adRequestPending = false;
+    adPlaying = false;
+    hideAdLayer();
   }
 
   function requestAd() {
-    if (!imaReady) { initIMA(); if (!imaReady) return; }
+    if (adRequestPending || adPlaying) return;
+    if (!imaInitDone) initIMA();
+    if (!imaInitDone || !adsLoader) return;
+
     var vid = getVid();
     var adCont = getAdCont();
     if (!vid || !adCont) return;
 
-    adDisplayContainer.initialize();
+    prepareAdContainer();
     adCont.style.display = 'block';
+    adRequestPending = true;
 
     var adsRequest = new google.ima.AdsRequest();
     adsRequest.adTagUrl = VAST_URL;
-    adsRequest.linearAdSlotWidth = vid.clientWidth || 320;
-    adsRequest.linearAdSlotHeight = vid.clientHeight || 240;
-    adsRequest.nonLinearAdSlotWidth = vid.clientWidth || 320;
+    adsRequest.linearAdSlotWidth = Math.max(320, vid.clientWidth || 320);
+    adsRequest.linearAdSlotHeight = Math.max(180, vid.clientHeight || 240);
+    adsRequest.nonLinearAdSlotWidth = Math.max(320, vid.clientWidth || 320);
     adsRequest.nonLinearAdSlotHeight = 150;
-    vid.pause();
-    adsLoader.requestAds(adsRequest);
+
+    if (typeof adsRequest.setAdWillAutoPlay === 'function') adsRequest.setAdWillAutoPlay(true);
+    if (typeof adsRequest.setAdWillPlayMuted === 'function') adsRequest.setAdWillPlayMuted(!!vid.muted);
+
+    try {
+      vid.pause();
+      adsLoader.requestAds(adsRequest);
+    } catch (err) {
+      onAdError();
+    }
   }
 
   function onAdsManagerLoaded(e) {
     var vid = getVid();
     try {
       adsManager = e.getAdsManager(vid);
+      adRequestPending = false;
+      adPlaying = true;
+
       adsManager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, onAdError);
       adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, function() {
-        var adCont = getAdCont();
-        if (adCont) adCont.style.display = 'none';
+        hideAdLayer();
+        armNextAdFromCurrentTime();
         if (vid) vid.play().catch(function(){});
       });
       adsManager.addEventListener(google.ima.AdEvent.Type.ALL_ADS_COMPLETED, function() {
-        var adCont = getAdCont();
-        if (adCont) adCont.style.display = 'none';
+        hideAdLayer();
+        armNextAdFromCurrentTime();
         if (vid) vid.play().catch(function(){});
       });
+
       adsManager.init(vid.clientWidth || 320, vid.clientHeight || 240, google.ima.ViewMode.NORMAL);
       adsManager.start();
-    } catch(err) {
+    } catch (err) {
       onAdError();
     }
   }
 
   function onAdError() {
     var vid = getVid();
-    var adCont = getAdCont();
-    if (adsManager) { try { adsManager.destroy(); } catch(e){} adsManager = null; }
-    if (adCont) adCont.style.display = 'none';
+    destroyAdsManager();
+    hideAdLayer();
+    armNextAdFromCurrentTime();
     if (vid) vid.play().catch(function(){});
   }
 
-  function onTimeUpdate() {
+  function checkAdGate() {
     var vid = getVid();
-    if (!vid || adShownThisSession) return;
-    if (vid.currentTime >= AD_TRIGGER_SEC) {
-      adShownThisSession = true;
+    if (!vid || adRequestPending || adPlaying) return;
+    if (vid.paused || vid.ended || vid.readyState < 2) return;
+    if (vid.currentTime >= nextAdAt) {
       requestAd();
     }
   }
 
   function hookVideo() {
     var vid = getVid();
-    if (vid) {
-      vid.removeEventListener('timeupdate', onTimeUpdate);
-      vid.addEventListener('timeupdate', onTimeUpdate);
-    }
+    if (!vid) return;
+
+    vid.removeEventListener('timeupdate', checkAdGate);
+    vid.removeEventListener('playing', checkAdGate);
+    vid.removeEventListener('seeked', checkAdGate);
+    vid.removeEventListener('loadedmetadata', checkAdGate);
+
+    vid.addEventListener('timeupdate', checkAdGate);
+    vid.addEventListener('playing', checkAdGate);
+    vid.addEventListener('seeked', checkAdGate);
+    vid.addEventListener('loadedmetadata', checkAdGate);
   }
 
-  // Wait for IMA SDK to load then init
+  function startPolling() {
+    if (adPollTimer) clearInterval(adPollTimer);
+    adPollTimer = setInterval(checkAdGate, 2000);
+  }
+
   function waitForIMA() {
     if (typeof google !== 'undefined' && google.ima) {
       initIMA();
@@ -4527,25 +4562,36 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Patch initVCOverlay to reset ad per video open
   function patchInitVCOverlay() {
     var orig = window.initVCOverlay;
     if (orig && orig._imaPatched) return;
+
     window.initVCOverlay = function(item) {
-      adShownThisSession = false;
-      imaInitDone = false;
-      if (adsManager) { try { adsManager.destroy(); } catch(e){} adsManager = null; }
+      nextAdAt = AD_INTERVAL_SEC;
+      adRequestPending = false;
+      adPlaying = false;
+      displayContainerInitialized = false;
+      hideAdLayer();
+      destroyAdsManager();
+
       if (orig) orig.call(this, item);
-      hookVideo();
+
       initIMA();
+      hookVideo();
+      startPolling();
+
+      // Small delay so the player has time to start before we arm the timer.
+      setTimeout(checkAdGate, 1200);
     };
+
     window.initVCOverlay._imaPatched = true;
   }
 
   document.addEventListener('DOMContentLoaded', function() {
     waitForIMA();
     hookVideo();
-    // Keep trying to patch until initVCOverlay is defined
+    startPolling();
+
     var patchInterval = setInterval(function() {
       if (window.initVCOverlay) {
         patchInitVCOverlay();
