@@ -13,6 +13,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Google IMA SDK for VAST ads -->
+  <script src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
@@ -38,6 +40,19 @@
       --prism1:#ff6600;
       --prism2:#ff8800;
       --prism3:#cc4400;
+    }
+
+    /* ── PH smooth scroll & section layout ── */
+    html { scroll-behavior: smooth; }
+    body { 
+      overscroll-behavior-y: contain;
+      -webkit-overflow-scrolling: touch;
+    }
+    #gridSection {
+      padding: 0;
+    }
+    .section-head {
+      padding: 4px 14px 10px;
     }
 
     .topbar-ad{ display:none; }
@@ -109,11 +124,11 @@
 
     /* Smooth card entrance — GPU only, no layout thrash */
     @keyframes cardIn{
-      from{ opacity:0; transform:translateY(14px); }
-      to{ opacity:1; transform:translateY(0); }
+      from{ opacity:0; }
+      to{ opacity:1; }
     }
     .card{
-      animation: cardIn .32s ease both;
+      animation: none;
     }
     .ph-card{ animation: rise .5s cubic-bezier(.34,1.56,.64,1) both; }
     .lazy-sentinel{
@@ -365,7 +380,7 @@
     .content{
       width:min(1600px, 100%);
       margin:0 auto;
-      padding:16px;
+      padding:16px 0;
       display:grid;
       gap:16px;
     }
@@ -547,83 +562,101 @@
 
     .grid{
       display:grid;
-      gap:12px;
-      grid-template-columns:repeat(2, minmax(0,1fr));
+      gap:0px;
+      grid-template-columns:1fr;
     }
-    @media (min-width: 768px){.grid{grid-template-columns:repeat(4, minmax(0,1fr));}}
-    @media (min-width: 1200px){.grid{grid-template-columns:repeat(6, minmax(0,1fr));}}
+    @media (min-width: 768px){.grid{grid-template-columns:repeat(2, minmax(0,1fr));gap:0px;}}
+    @media (min-width: 1200px){.grid{grid-template-columns:repeat(3, minmax(0,1fr));gap:0px;}}
 
+    /* ── PornHub-style card ── */
     .card{
       position:relative;
-      min-height:208px;
-      border-radius:10px;
-      overflow:hidden;
       cursor:pointer;
-      border:1px solid rgba(255,255,255,.07);
-      background:#1a1a1a;
+      border-radius:0;
+      overflow:visible;
+      border:none;
+      background:transparent;
+      animation:none;
+      padding:0 0 16px 0;
     }
     .card-top{
       position:absolute;
-      left:7px;
-      top:7px;
+      right:6px;
+      bottom:calc(100% - var(--thumb-h, 56.25%) + 6px);
       z-index:3;
-      font-size:9px;
-      font-weight:900;
+      font-size:10px;
+      font-weight:700;
       color:#fff;
-      padding:2px 6px;
-      border-radius:999px;
-      background:rgba(0,0,0,.70);
-      border:1px solid rgba(255,102,0,.15);
-      letter-spacing:.03em;
+      padding:1px 5px;
+      border-radius:3px;
+      background:rgba(0,0,0,.82);
+      letter-spacing:.01em;
     }
     .card-media{
-      height:72%;
       position:relative;
+      width:100%;
+      aspect-ratio:16/9;
       overflow:hidden;
       background:#111;
+      border-radius:0;
+      flex-shrink:0;
     }
     .card-media img{
-      position:absolute;inset:0;width:100%;height:100%;object-fit:contain;z-index:0;display:block;
+      position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;display:block;
     }
     .card-media::before{ display:none; }
     .card-media::after{ display:none; }
     .card-footer{
-      height:30%;
-      padding:6px 8px;
+      padding:7px 10px 0;
       display:flex;
       flex-direction:column;
-      justify-content:space-between;
       gap:3px;
-      background:#1a1a1a;
+      background:transparent;
     }
     .card-title{
       margin:0;
-      font-size:11px;
-      font-weight:700;
-      line-height:1.2;
+      font-size:14px;
+      font-weight:600;
+      line-height:1.3;
       color:#f5f5f5;
+      display:-webkit-box;
+      -webkit-line-clamp:2;
+      -webkit-box-orient:vertical;
+      overflow:hidden;
     }
     .card-meta{
       display:flex;
       justify-content:space-between;
       align-items:center;
-      gap:4px;
-      font-size:9px;
-      color:#999999;
+      gap:6px;
+      font-size:12px;
+      color:#888;
       font-weight:500;
+      margin-top:2px;
+    }
+    /* Channel name row */
+    .card-channel{
+      display:flex;
+      align-items:center;
+      gap:5px;
+      font-size:12px;
+      color:#aaa;
+      font-weight:600;
     }
     .mini-actions{display:flex;gap:4px}
     .mini{
-      width:22px;height:22px;
+      width:24px;height:24px;
       border:none;
-      border-radius:7px;
+      border-radius:50%;
       cursor:pointer;
-      background:rgba(255,255,255,.07);
-      color:#c0eeff;
+      background:transparent;
+      color:#888;
       display:grid;
       place-items:center;
+      transition:color .15s;
     }
-    .mini svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    .mini:hover{color:#ff6600;}
+    .mini svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 
     .footer-nav{
       position:fixed;
@@ -999,7 +1032,7 @@
 
     /* rec-card */
     .rec-card{
-      display:grid;grid-template-columns:145px 1fr;gap:12px;align-items:center;
+      display:grid;grid-template-columns:174px 1fr;gap:12px;align-items:center;
       padding:10px 12px;background:transparent;
       border-bottom:1px solid rgba(255,102,0,.07);
       transition:background 200ms cubic-bezier(.2,.8,.2,1);cursor:pointer;
@@ -1026,7 +1059,7 @@
 
     /* rec-item (from state.items) */
     .rec-item{
-      display:grid;grid-template-columns:130px 1fr;gap:10px;align-items:center;
+      display:grid;grid-template-columns:156px 1fr;gap:10px;align-items:center;
       padding:9px 12px;border-bottom:1px solid rgba(255,102,0,.07);
       transition:background 200ms cubic-bezier(.2,.8,.2,1);cursor:pointer;
     }
@@ -1135,17 +1168,7 @@
     }
     /* ===== INLINE EDIT SYSTEM v2 ===== */
 
-    /* Edit mode glow on body */
-    body.edit-mode::after{
-      content:"✏️ EDIT MODE ON";
-      position:fixed;top:0;left:50%;transform:translateX(-50%);
-      z-index:9000;
-      background:linear-gradient(90deg,#ff6600,#7fffff);
-      color:#0f0f0f;font-size:11px;font-weight:900;letter-spacing:.12em;
-      padding:4px 16px;border-radius:0 0 12px 12px;
-      box-shadow:0 4px 20px rgba(255,102,0,.4);
-      pointer-events:none;
-    }
+    /* Edit mode glow on body — using editBar at top instead */
 
     /* Hover outline in edit mode */
     body.edit-mode .editable-el:hover{
@@ -1158,21 +1181,21 @@
       outline-offset:3px;
     }
 
-    /* Floating bottom action bar */
+    /* Floating edit bar — sits over topbar, never blocks content */
     #editBar{
-      position:fixed;bottom:96px;left:50%;transform:translateX(-50%) translateY(120px);
+      position:fixed;top:0;left:0;right:0;
       z-index:8000;
-      display:flex;align-items:center;gap:8px;
-      background:rgba(10,10,10,.95);
-      border:1px solid rgba(255,102,0,.20);
-      border-radius:999px;
-      padding:8px 14px;
-      box-shadow:0 12px 40px rgba(0,0,0,.7),0 0 30px rgba(255,102,0,.15);
+      display:flex;align-items:center;gap:6px;justify-content:center;
+      background:rgba(10,10,10,.97);
+      border-bottom:1px solid rgba(255,102,0,.25);
+      padding:5px 10px;
+      box-shadow:0 4px 18px rgba(0,0,0,.6),0 0 20px rgba(255,102,0,.10);
       backdrop-filter:blur(20px);
       transition:transform .3s cubic-bezier(.34,1.4,.64,1),opacity .3s ease;
+      transform:translateY(-100%);
       opacity:0;pointer-events:none;
     }
-    #editBar.visible{transform:translateX(-50%) translateY(0);opacity:1;pointer-events:all;}
+    #editBar.visible{transform:translateY(0);opacity:1;pointer-events:all;}
     .ebar-btn{
       width:40px;height:40px;border:none;border-radius:50%;cursor:pointer;
       display:grid;place-items:center;font-size:16px;
@@ -1714,6 +1737,7 @@ backface-visibility:hidden;
           <div class="player-shell-inner">
             <div class="video-frame" id="playerFrame">
               <video id="playerVideo" playsinline preload="metadata"></video>
+              <div id="imaAdContainer" style="position:absolute;inset:0;z-index:10;display:none;"></div>
 
               <!-- ══ CUSTOM OVERLAY CONTROLS ══ -->
               <div id="vcOverlay" style="
@@ -1723,7 +1747,7 @@ backface-visibility:hidden;
                 background:linear-gradient(180deg,rgba(0,0,0,.45) 0%,transparent 30%,transparent 65%,rgba(0,0,0,.70) 100%);
               ">
                 <!-- TOP: title row -->
-                <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;">
+                <div style="display:none;align-items:center;gap:8px;padding:8px 10px;">
                   <span id="vcTitle" style="flex:1;font-size:13px;font-weight:700;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.8);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></span>
                 </div>
 
@@ -1785,12 +1809,42 @@ backface-visibility:hidden;
                 <div class="ad-pill">Explore →</div>
               </div>
             </div>
-            <div class="ad-banner-wide">
+            <!-- Adsterra Native Banner -->
+            <div id="adsterra-native-wrap" style="width:100%;margin:0 0 10px 0;min-height:60px;">
+              <div id="container-f87907886d28938ef7c85e2052c5581f"></div>
+            </div>
+            <script async="async" data-cfasync="false" src="https://pl29174038.profitablecpmratenetwork.com/f87907886d28938ef7c85e2052c5581f/invoke.js"></script>
+            <script>
+              (function(){
+                function refreshAdsterra(){
+                  var wrap = document.getElementById('container-f87907886d28938ef7c85e2052c5581f');
+                  if(!wrap) return;
+                  // Clear old ad
+                  wrap.innerHTML = '';
+                  // Re-inject script
+                  var s = document.createElement('script');
+                  s.async = true;
+                  s.setAttribute('data-cfasync','false');
+                  s.src = 'https://pl29174038.profitablecpmratenetwork.com/f87907886d28938ef7c85e2052c5581f/invoke.js?' + Date.now();
+                  wrap.parentNode.insertBefore(s, wrap);
+                  // Schedule next refresh: random 10s-70s range, not round numbers
+                  // Base random 10000-70000ms, then add 1500-4500ms offset so it never lands on 10/20/30... exactly
+                  var base = (Math.floor(Math.random() * 7) + 1) * 10000;       // 10000,20000,...,70000
+                  var offset = Math.floor(Math.random() * 3000) + 1500;          // +1500 to +4500ms
+                  setTimeout(refreshAdsterra, base + offset);
+                }
+                // First refresh after random 10-70s
+                var initBase = (Math.floor(Math.random() * 7) + 1) * 10000;
+                var initOffset = Math.floor(Math.random() * 3000) + 1500;
+                setTimeout(refreshAdsterra, initBase + initOffset);
+              })();
+            </script>
+            <div class="ad-banner-wide" style="margin-top:10px;padding:10px 13px;border-radius:14px;">
               <div>
-                <div class="ad-label">Sponsored</div>
-                <div class="ad-copy">One full-width premium banner — maximum visibility for your brand across all screens.</div>
+                <div class="ad-label" style="font-size:8.5px;">Sponsored</div>
+                <div class="ad-copy" style="font-size:10px;">Boost your reach with targeted placements across premium streaming audiences.</div>
               </div>
-              <div class="ad-pill">Get Started →</div>
+              <div class="ad-pill" style="font-size:9px;padding:5px 8px;">Explore →</div>
             </div>
           </section>
 
@@ -2158,19 +2212,11 @@ backface-visibility:hidden;
     // ── Placeholder upload cards (Hot/Movie when empty or shown always) ───
     function placeholderCardHTML(type, num) {
       const pid = 'ph_' + type + '_' + num;
-      const gradients = [
-        'linear-gradient(160deg,#1c1c1c,#131313)',
-        'linear-gradient(160deg,#1e1a18,#141210)',
-        'linear-gradient(160deg,#1a1a1a,#111111)',
-        'linear-gradient(160deg,#1d1b19,#131110)',
-        'linear-gradient(160deg,#1e1c1a,#121110)',
-      ];
-      const bg = gradients[(num - 1) % gradients.length];
       const previewTitle = type === 'hot' ? getAutoTitle(num) : ('Movie ' + num);
       return `
-        <article class="card ph-card" data-phid="${pid}" data-lazy-card="1" style="min-height:219px;cursor:default;position:relative;overflow:hidden;">
+        <article class="card ph-card" data-phid="${pid}" data-lazy-card="1" style="cursor:default;">
           <div class="card-top">${num}</div>
-          <div class="card-media ph-media" id="phMedia_${pid}" style="background:${bg};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:background .2s;" onclick="phUpload('${pid}','${type}')">
+          <div class="card-media ph-media" id="phMedia_${pid}" style="background:linear-gradient(160deg,#1c1c1c,#131313);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;" onclick="phUpload('${pid}','${type}')">
             <svg viewBox="0 0 24 24" style="width:32px;height:32px;opacity:.5;" fill="none" stroke="rgba(255,102,0,.8)" stroke-width="1.5"><path d="M3 16.5V19a2 2 0 002 2h14a2 2 0 002-2v-2.5M16 8l-4-4-4 4M12 4v12"/></svg>
             <div style="font-size:10px;color:#ff6600;font-weight:700;letter-spacing:.04em;">Upload Image</div>
             <input type="file" id="phFile_${pid}" accept="image/*" style="display:none;" onchange="phHandleUpload(event,'${pid}','${type}',${num})">
@@ -2274,7 +2320,7 @@ backface-visibility:hidden;
       // ── Hide hot cards with no thumbnail ──
       if (item.type === 'hot' && !isImg) return '';
 
-      // ── Auto-title: if title is blank or generic, generate a clean short title ──
+      // ── Auto-title ──
       const _rawTitle = (item.title || '').trim();
       const _isGenericTitle = !_rawTitle || _rawTitle === '.' || _rawTitle === ',' || /^(hot|photo|movie)\s*#?\d*$/i.test(_rawTitle);
       const displayTitle = item.type === 'gallery'
@@ -2283,41 +2329,43 @@ backface-visibility:hidden;
             ? (_isGenericTitle ? getAutoTitle(num) : _rawTitle)
             : (_rawTitle || ('Item ' + num)));
 
-      // Subtle per-card dark gradient variation
-      const _ph = [
-        'linear-gradient(160deg,#1c1c1c,#131313)',
-        'linear-gradient(160deg,#1e1a18,#141210)',
-        'linear-gradient(160deg,#1a1a1a,#111111)',
-        'linear-gradient(160deg,#1d1b19,#131110)',
-        'linear-gradient(160deg,#1c1c1c,#141414)',
-        'linear-gradient(160deg,#1e1c1a,#121110)',
-      ];
-      const _idx = (num - 1) % _ph.length;
-      const thumbBgStyle = isImg ? '' : 'background:' + (item.thumb || _ph[_idx]) + ';';
+      const thumbBgStyle = isImg ? '' : 'background:' + (item.thumb || 'linear-gradient(160deg,#1c1c1c,#131313)') + ';';
       const thumbImgTag = isImg
-        ? `<img src="${item.thumb}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;opacity:0;transition:opacity .3s ease;" onload="this.style.opacity=1" onerror="this.style.display='none'"/>`
+        ? `<img src="${item.thumb}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;opacity:0;transition:opacity .25s ease;" onload="this.style.opacity=1" onerror="this.style.display='none'"/>`
         : '';
 
       const isAnime = item.type === 'anime';
       const seasons = item.seasons || [];
       const totalEps = seasons.reduce((a, s) => a + (Array.isArray(s.episodes) ? s.episodes.length : (typeof s.episodes === 'number' ? s.episodes : 0)), 0);
       const seasonBadge = isAnime && seasons.length
-        ? `<div style="position:absolute;top:10px;right:10px;z-index:3;font-size:9px;font-weight:900;color:#fff;background:linear-gradient(135deg,#ff6600,#cc4400);padding:3px 7px;border-radius:999px;letter-spacing:.04em;">${seasons.length}S • ${totalEps}EP</div>`
+        ? `<div style="position:absolute;bottom:6px;left:6px;z-index:3;font-size:9px;font-weight:900;color:#fff;background:linear-gradient(135deg,#ff6600,#cc4400);padding:2px 7px;border-radius:3px;letter-spacing:.04em;">${seasons.length}S · ${totalEps}EP</div>`
         : '';
-      const cardBorder = isAnime ? 'rgba(255,102,0,.22)' : 'rgba(255,102,0,.10)';
+
+      // Fake views for realism
+      const _viewNums = ['12K','28K','45K','73K','112K','189K','304K','521K','1.2M','2.4M'];
+      const fakeViews = _viewNums[num % _viewNums.length];
+      // Channel name
+      const _channels = ['Premium Hub','Hot Stars','NeonX','Studio 18','Creator+','VIP Stream','FireBox'];
+      const channelName = item.channelName || _channels[num % _channels.length];
 
       return `
-        <article class="card" data-id="${item.id}" data-lazy-card="1" style="border-color:${cardBorder};">
-          <div class="card-top">${num}</div>
-          ${seasonBadge}
-          <div class="card-media" style="${thumbBgStyle}">${thumbImgTag}</div>
+        <article class="card" data-id="${item.id}" data-lazy-card="1">
+          <div class="card-media" style="${thumbBgStyle}">
+            ${thumbImgTag}
+            ${seasonBadge}
+            <div class="card-top">${item.meta && item.meta.includes('HD') ? 'HD' : num}</div>
+          </div>
           <div class="card-footer">
             <h3 class="card-title">${displayTitle}</h3>
+            <div class="card-channel">
+              <span style="color:${isAnime?'#ff8800':'#aaa'};font-size:12px;font-weight:600;">${isAnime ? '🎌 Anime' : channelName}</span>
+              <svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:#ff6600;stroke:none;flex:0 0 auto;"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
             <div class="card-meta">
-              <span style="color:${isAnime?'#ff8800':'var(--muted)'};">${isAnime ? '🎌 Anime' : item.meta}</span>
+              <span>${fakeViews} views</span>
               <div class="mini-actions">
-                <button class="mini" data-like="${item.id}" aria-label="Like card">${liked ? heartFull() : heartLine()}</button>
-                <button class="mini" data-save="${item.id}" aria-label="Save card">${saved ? saveFull() : saveLine()}</button>
+                <button class="mini" data-like="${item.id}" aria-label="Like">${liked ? heartFull() : heartLine()}</button>
+                <button class="mini" data-save="${item.id}" aria-label="Save">${saved ? saveFull() : saveLine()}</button>
               </div>
             </div>
           </div>
@@ -4372,6 +4420,142 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
+<meta http-equiv="Delegate-CH" content="Sec-CH-UA https://s.magsrv.com; Sec-CH-UA-Mobile https://s.magsrv.com; Sec-CH-UA-Arch https://s.magsrv.com; Sec-CH-UA-Model https://s.magsrv.com; Sec-CH-UA-Platform https://s.magsrv.com; Sec-CH-UA-Platform-Version https://s.magsrv.com; Sec-CH-UA-Bitness https://s.magsrv.com; Sec-CH-UA-Full-Version-List https://s.magsrv.com; Sec-CH-UA-Full-Version https://s.magsrv.com;">
+
+<script>
+// ── ExoClick VAST via Google IMA SDK ──
+(function() {
+  var VAST_URL = 'https://s.magsrv.com/v1/vast.php?idzone=5903528';
+  var AD_TRIGGER_SEC = 300; // 5 minutes
+
+  var imaReady = false;
+  var adDisplayContainer, adsLoader, adsManager;
+  var adShownThisSession = false;
+  var imaInitDone = false;
+
+  function getVid() { return document.getElementById('playerVideo'); }
+  function getAdCont() { return document.getElementById('imaAdContainer'); }
+
+  function initIMA() {
+    if (imaInitDone) return;
+    if (typeof google === 'undefined' || !google.ima) return;
+    imaInitDone = true;
+    var vid = getVid();
+    var adCont = getAdCont();
+    if (!vid || !adCont) return;
+
+    adDisplayContainer = new google.ima.AdDisplayContainer(adCont, vid);
+    adsLoader = new google.ima.AdsLoader(adDisplayContainer);
+
+    adsLoader.addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, onAdsManagerLoaded, false);
+    adsLoader.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, onAdError, false);
+    imaReady = true;
+  }
+
+  function requestAd() {
+    if (!imaReady) { initIMA(); if (!imaReady) return; }
+    var vid = getVid();
+    var adCont = getAdCont();
+    if (!vid || !adCont) return;
+
+    adDisplayContainer.initialize();
+    adCont.style.display = 'block';
+
+    var adsRequest = new google.ima.AdsRequest();
+    adsRequest.adTagUrl = VAST_URL;
+    adsRequest.linearAdSlotWidth = vid.clientWidth || 320;
+    adsRequest.linearAdSlotHeight = vid.clientHeight || 240;
+    adsRequest.nonLinearAdSlotWidth = vid.clientWidth || 320;
+    adsRequest.nonLinearAdSlotHeight = 150;
+    vid.pause();
+    adsLoader.requestAds(adsRequest);
+  }
+
+  function onAdsManagerLoaded(e) {
+    var vid = getVid();
+    try {
+      adsManager = e.getAdsManager(vid);
+      adsManager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, onAdError);
+      adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, function() {
+        var adCont = getAdCont();
+        if (adCont) adCont.style.display = 'none';
+        if (vid) vid.play().catch(function(){});
+      });
+      adsManager.addEventListener(google.ima.AdEvent.Type.ALL_ADS_COMPLETED, function() {
+        var adCont = getAdCont();
+        if (adCont) adCont.style.display = 'none';
+        if (vid) vid.play().catch(function(){});
+      });
+      adsManager.init(vid.clientWidth || 320, vid.clientHeight || 240, google.ima.ViewMode.NORMAL);
+      adsManager.start();
+    } catch(err) {
+      onAdError();
+    }
+  }
+
+  function onAdError() {
+    var vid = getVid();
+    var adCont = getAdCont();
+    if (adsManager) { try { adsManager.destroy(); } catch(e){} adsManager = null; }
+    if (adCont) adCont.style.display = 'none';
+    if (vid) vid.play().catch(function(){});
+  }
+
+  function onTimeUpdate() {
+    var vid = getVid();
+    if (!vid || adShownThisSession) return;
+    if (vid.currentTime >= AD_TRIGGER_SEC) {
+      adShownThisSession = true;
+      requestAd();
+    }
+  }
+
+  function hookVideo() {
+    var vid = getVid();
+    if (vid) {
+      vid.removeEventListener('timeupdate', onTimeUpdate);
+      vid.addEventListener('timeupdate', onTimeUpdate);
+    }
+  }
+
+  // Wait for IMA SDK to load then init
+  function waitForIMA() {
+    if (typeof google !== 'undefined' && google.ima) {
+      initIMA();
+    } else {
+      setTimeout(waitForIMA, 300);
+    }
+  }
+
+  // Patch initVCOverlay to reset ad per video open
+  function patchInitVCOverlay() {
+    var orig = window.initVCOverlay;
+    if (orig && orig._imaPatched) return;
+    window.initVCOverlay = function(item) {
+      adShownThisSession = false;
+      imaInitDone = false;
+      if (adsManager) { try { adsManager.destroy(); } catch(e){} adsManager = null; }
+      if (orig) orig.call(this, item);
+      hookVideo();
+      initIMA();
+    };
+    window.initVCOverlay._imaPatched = true;
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    waitForIMA();
+    hookVideo();
+    // Keep trying to patch until initVCOverlay is defined
+    var patchInterval = setInterval(function() {
+      if (window.initVCOverlay) {
+        patchInitVCOverlay();
+        clearInterval(patchInterval);
+      }
+    }, 200);
+  });
+})();
+</script>
+
 </body>
   <script>
   /* ============================================================
@@ -5393,7 +5577,100 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // ── ALL tab — with long-press drag reorder ────────────────────
+  // ── Admin: Position-Move Dialog (shared by All + Gallery) ─────
+  function showAdminMoveDialog(itemId, currentPos, mode, catTag) {
+    if (navigator.vibrate) navigator.vibrate(40);
+    const existing = document.getElementById('adminMoveDialog');
+    if (existing) existing.remove();
+    let total;
+    if (mode === 'all') {
+      total = state.items.length;
+    } else {
+      const ALL_CAT_TAGS = GAL_CATS.map(x => x.tag);
+      total = state.items.filter(i => {
+        if (i.type !== 'gallery') return false;
+        const hasCatTag = (i.tags||[]).some(t => ALL_CAT_TAGS.includes(t));
+        if (!hasCatTag) return catTag === 'Beautiful Girl';
+        return (i.tags||[]).includes(catTag);
+      }).length;
+    }
+    const overlay = document.createElement('div');
+    overlay.id = 'adminMoveDialog';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.68);display:flex;align-items:center;justify-content:center;padding:20px;';
+    const box = document.createElement('div');
+    box.style.cssText = 'background:#1a1a1a;border:1px solid rgba(255,102,0,.5);border-radius:18px;padding:22px;width:100%;max-width:290px;box-shadow:0 0 50px rgba(255,102,0,.25);';
+    const titleEl = document.createElement('div');
+    titleEl.style.cssText = 'font-size:14px;font-weight:900;color:#ff6600;margin-bottom:5px;';
+    titleEl.textContent = '📍 Position Change Karo';
+    box.appendChild(titleEl);
+    const sub = document.createElement('div');
+    sub.style.cssText = 'font-size:11px;color:#777;margin-bottom:14px;';
+    sub.textContent = 'Current: #' + currentPos + '   |   Total: ' + total;
+    box.appendChild(sub);
+    const input = document.createElement('input');
+    input.type = 'number'; input.min = 1; input.max = total;
+    input.placeholder = '1 se ' + total + ' tak number daalo';
+    input.style.cssText = 'width:100%;padding:12px 14px;background:rgba(255,102,0,.08);border:1px solid rgba(255,102,0,.3);border-radius:12px;color:#f5f5f5;font-size:16px;font-weight:700;outline:none;margin-bottom:14px;box-sizing:border-box;';
+    box.appendChild(input);
+    const btnRow = document.createElement('div');
+    btnRow.style.cssText = 'display:flex;gap:10px;';
+    const moveBtn = document.createElement('button');
+    moveBtn.textContent = '✅ Move Karo';
+    moveBtn.style.cssText = 'flex:1;padding:12px;border:none;border-radius:12px;background:linear-gradient(135deg,#ff6600,#ff8800);color:#fff;font-size:13px;font-weight:900;cursor:pointer;';
+    moveBtn.onclick = () => {
+      const newPos = parseInt(input.value);
+      if (!newPos || newPos < 1 || newPos > total) { toast('1 se ' + total + ' ke beech number daalo!'); input.focus(); return; }
+      overlay.remove();
+      moveAdminItem(itemId, newPos - 1, mode, catTag);
+    };
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') moveBtn.onclick(); });
+    const cancelBtn = document.createElement('button');
+    cancelBtn.textContent = '✕';
+    cancelBtn.style.cssText = 'padding:12px 16px;border:1px solid rgba(255,255,255,.10);border-radius:12px;background:transparent;color:#777;font-size:13px;cursor:pointer;';
+    cancelBtn.onclick = () => overlay.remove();
+    btnRow.appendChild(moveBtn); btnRow.appendChild(cancelBtn);
+    box.appendChild(btnRow);
+    overlay.appendChild(box);
+    overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+    document.body.appendChild(overlay);
+    setTimeout(() => input.focus(), 80);
+  }
+
+  function moveAdminItem(itemId, toIndex, mode, catTag) {
+    if (mode === 'all') {
+      const fromIndex = state.items.findIndex(x => x.id === itemId);
+      if (fromIndex === -1) return;
+      const [item] = state.items.splice(fromIndex, 1);
+      const safeIdx = Math.min(toIndex, state.items.length);
+      state.items.splice(safeIdx, 0, item);
+      persist();
+      toast('✅ #' + (safeIdx + 1) + ' position pe move ho gaya!');
+      renderAdminAll();
+    } else {
+      const ALL_CAT_TAGS = GAL_CATS.map(x => x.tag);
+      const catItems = state.items.filter(i => {
+        if (i.type !== 'gallery') return false;
+        const hasCatTag = (i.tags||[]).some(t => ALL_CAT_TAGS.includes(t));
+        if (!hasCatTag) return catTag === 'Beautiful Girl';
+        return (i.tags||[]).includes(catTag);
+      });
+      const fromIndex = catItems.findIndex(x => x.id === itemId);
+      if (fromIndex === -1) return;
+      const ids = catItems.map(x => x.id);
+      const [moved] = catItems.splice(fromIndex, 1);
+      const safeIdx = Math.min(toIndex, catItems.length);
+      catItems.splice(safeIdx, 0, moved);
+      const firstIdx = state.items.findIndex(x => ids.includes(x.id));
+      const nonCat = state.items.filter(x => !ids.includes(x.id));
+      if (firstIdx >= 0) { nonCat.splice(firstIdx, 0, ...catItems); state.items = nonCat; }
+      else { state.items = [...catItems, ...nonCat]; }
+      persist();
+      toast('✅ #' + (safeIdx + 1) + ' position pe move ho gaya!');
+      renderAdminGallery(galAdminCat);
+    }
+  }
+
+  // ── ALL tab — 3-per-row grid, long-press 2s → position move ───
   function renderAdminAll() {
     const c = document.getElementById('adminContent');
     const typeIcon = {hot:'🔥', gallery:'🖼️', movie:'🎬', anime:'🎌'};
@@ -5403,245 +5680,64 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Working copy (ids order) — mutated during drag
-    let orderIds = state.items.map(x => x.id);
-
     const h = document.createElement('div');
     h.className = 'adm-section-head';
     h.textContent = '📹 All Content (' + state.items.length + ')';
     c.appendChild(h);
 
     const hint = document.createElement('div');
-    hint.style.cssText = 'font-size:10px;color:#ff6600;opacity:.7;text-align:center;padding:4px 0 8px;letter-spacing:.03em;';
-    hint.textContent = '✋ 1 second press karke kisi bhi video ko kheecho — position badlo';
+    hint.style.cssText = 'font-size:10px;color:#ff6600;opacity:.75;text-align:center;padding:4px 0 10px;letter-spacing:.03em;';
+    hint.textContent = '✋ 2 sec press karo — position number se turant move karo';
     c.appendChild(hint);
 
-    // Confirm button (hidden until reorder happens)
-    const confirmBtn = document.createElement('button');
-    confirmBtn.id = 'reorderConfirmBtn';
-    confirmBtn.style.cssText = 'display:none;width:100%;padding:14px;border:none;border-radius:16px;background:linear-gradient(90deg,#ff6600,#ff8800);color:#fff;font-size:14px;font-weight:900;letter-spacing:.05em;cursor:pointer;margin-bottom:12px;box-shadow:0 0 22px rgba(255,102,0,.45);transition:opacity .2s;';
-    confirmBtn.textContent = '✅ Confirm — Order Save Karo';
-    confirmBtn.onclick = () => {
-      // Rebuild state.items in new order
-      const idMap = {};
-      state.items.forEach(x => idMap[x.id] = x);
-      const newItems = orderIds.map(id => idMap[id]).filter(Boolean);
-      // Keep any items not in orderIds (shouldn't happen)
-      state.items.forEach(x => { if (!orderIds.includes(x.id)) newItems.push(x); });
-      state.items = newItems;
-      persist();
-      confirmBtn.style.display = 'none';
-      confirmBtn.textContent = '✅ Confirm — Order Save Karo';
-      toast('🎉 Order permanently save ho gaya!');
-      // Refresh numbering labels
-      list.querySelectorAll('[data-reorder-num]').forEach((el, i) => {
-        const id = el.dataset.reorderId;
-        const item = state.items.find(x => x.id === id);
-        el.querySelector('.reorder-num').textContent = '#' + String(i+1).padStart(2,'0');
-      });
-    };
-    c.appendChild(confirmBtn);
+    const grid = document.createElement('div');
+    grid.style.cssText = 'display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:2px;';
 
-    const list = document.createElement('div');
-    list.id = 'reorderList';
-    list.style.cssText = 'display:grid;gap:8px;margin-top:4px;position:relative;';
+    state.items.forEach((item, i) => {
+      const num = i + 1;
+      const cell = document.createElement('div');
+      cell.dataset.allId = item.id;
+      cell.style.cssText = 'position:relative;border-radius:10px;overflow:hidden;background:#111;border:1px solid rgba(255,102,0,.14);cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:manipulation;';
 
-    function buildRow(item, num) {
-      const row = document.createElement('div');
-      row.className = 'adm-card-row';
-      row.dataset.reorderId = item.id;
-      row.dataset.reorderNum = num;
-      row.style.cssText = row.style.cssText + 'transition:transform .18s ease,box-shadow .18s ease,opacity .18s ease;position:relative;touch-action:none;user-select:none;-webkit-user-select:none;';
+      const imgDiv = document.createElement('div');
+      imgDiv.style.cssText = 'width:100%;aspect-ratio:3/4;' + adminThumbStyle(item.thumb);
+      cell.appendChild(imgDiv);
 
-      // Drag handle
-      const handle = document.createElement('div');
-      handle.style.cssText = 'width:28px;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;flex:0 0 auto;cursor:grab;padding:0 4px 0 0;opacity:.55;';
-      handle.innerHTML = '<div style="width:14px;height:2px;background:#ff6600;border-radius:2px;"></div><div style="width:14px;height:2px;background:#ff6600;border-radius:2px;"></div><div style="width:14px;height:2px;background:#ff6600;border-radius:2px;"></div>';
+      const badge = document.createElement('div');
+      badge.style.cssText = 'position:absolute;top:4px;left:4px;background:rgba(0,0,0,.82);color:#ff6600;font-size:9px;font-weight:900;padding:2px 5px;border-radius:5px;z-index:2;letter-spacing:.02em;';
+      badge.textContent = '#' + String(num).padStart(2,'0');
+      cell.appendChild(badge);
 
-      const thumb = document.createElement('div');
-      thumb.className = 'adm-card-thumb';
-      thumb.style.cssText = adminThumbStyle(item.thumb);
+      const typeBadge = document.createElement('div');
+      typeBadge.style.cssText = 'position:absolute;top:4px;right:4px;background:rgba(0,0,0,.82);font-size:10px;padding:2px 4px;border-radius:5px;z-index:2;';
+      typeBadge.textContent = typeIcon[item.type] || '📄';
+      cell.appendChild(typeBadge);
 
-      const info = document.createElement('div');
-      info.style.cssText = 'flex:1;min-width:0;';
-      info.innerHTML = '<div style="font-size:12px;font-weight:700;color:#e0faff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"><span class="reorder-num">#' + String(num).padStart(2,'0') + '</span> ' + (item.title || 'Untitled') + '</div>'
-        + '<div style="font-size:10px;color:#999999;margin-top:2px;">'
-        + (typeIcon[item.type] || '') + ' ' + (item.type||'').toUpperCase()
-        + (item.videoUrl ? ' • 🎥 Video' : '') + '</div>';
+      const titleEl = document.createElement('div');
+      titleEl.style.cssText = 'position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,.88),transparent);padding:18px 5px 5px;font-size:8px;color:#e0faff;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;z-index:2;';
+      titleEl.textContent = item.title || 'Untitled';
+      cell.appendChild(titleEl);
 
       const delBtn = document.createElement('button');
-      delBtn.className = 'adm-del-btn';
-      delBtn.textContent = '🗑️';
-      delBtn.onclick = () => adminDeleteItem(item.id);
+      delBtn.style.cssText = 'position:absolute;bottom:4px;right:3px;width:20px;height:20px;border:none;border-radius:5px;background:rgba(220,40,40,.85);color:#fff;font-size:9px;cursor:pointer;z-index:3;display:flex;align-items:center;justify-content:center;padding:0;';
+      delBtn.innerHTML = '🗑';
+      delBtn.onclick = (e) => { e.stopPropagation(); adminDeleteItem(item.id); };
+      cell.appendChild(delBtn);
 
-      row.appendChild(handle);
-      row.appendChild(thumb);
-      row.appendChild(info);
-      row.appendChild(delBtn);
-
-      // ── Long-press drag logic ────────────────────────────
       let pressTimer = null;
-      let isDragging = false;
-      let ghost = null;
-      let startY = 0;
-      let ghostOffsetY = 0;
-      let placeholder = null;
-      let lastOverRow = null;
-      let _rowDragTouchMove = null;
+      const startPress = () => { pressTimer = setTimeout(() => { pressTimer = null; showAdminMoveDialog(item.id, num, 'all', null); }, 2000); };
+      const cancelPress = () => { clearTimeout(pressTimer); pressTimer = null; };
+      cell.addEventListener('touchstart', startPress, {passive:true});
+      cell.addEventListener('touchend', cancelPress, {passive:true});
+      cell.addEventListener('touchmove', cancelPress, {passive:true});
+      cell.addEventListener('mousedown', startPress);
+      cell.addEventListener('mouseup', cancelPress);
+      cell.addEventListener('mouseleave', cancelPress);
 
-      function startDrag(clientY) {
-        isDragging = true;
-        if (navigator.vibrate) navigator.vibrate(30);
-        // Add touchmove listener only when drag actually starts
-        _rowDragTouchMove = (e) => { e.preventDefault(); onMove(e.touches[0].clientY); };
-        document.addEventListener('touchmove', _rowDragTouchMove, {passive: false});
+      grid.appendChild(cell);
+    });
 
-        const rect = row.getBoundingClientRect();
-        ghostOffsetY = clientY - rect.top;
-
-        // Create ghost clone
-        ghost = row.cloneNode(true);
-        ghost.style.cssText = 'position:fixed;left:' + rect.left + 'px;top:' + rect.top + 'px;width:' + rect.width + 'px;z-index:9999;pointer-events:none;opacity:.92;box-shadow:0 12px 40px rgba(255,102,0,.55),0 0 0 2px rgba(255,102,0,.45);border-radius:16px;transform:scale(1.03);transition:box-shadow .1s;background:rgba(20,20,20,.97);';
-        document.body.appendChild(ghost);
-
-        // Placeholder
-        placeholder = document.createElement('div');
-        placeholder.style.cssText = 'height:' + rect.height + 'px;border-radius:16px;background:rgba(255,102,0,.08);border:2px dashed rgba(255,102,0,.35);transition:height .15s ease;';
-        row.parentNode.insertBefore(placeholder, row);
-        row.style.display = 'none';
-
-        // Dim other rows
-        list.querySelectorAll('.adm-card-row').forEach(r => {
-          if (r !== row) r.style.opacity = '0.45';
-        });
-      }
-
-      // Fast auto-scroll state
-      let _autoScrollRAF = null;
-      function _stopAutoScroll() { if (_autoScrollRAF) { cancelAnimationFrame(_autoScrollRAF); _autoScrollRAF = null; } }
-      function _startAutoScroll(dir) {
-        _stopAutoScroll();
-        const scroller = document.getElementById('adminContent');
-        if (!scroller) return;
-        function step() {
-          if (!isDragging) { _stopAutoScroll(); return; }
-          scroller.scrollTop += dir * 22; // fast speed — 22px per frame
-          _autoScrollRAF = requestAnimationFrame(step);
-        }
-        _autoScrollRAF = requestAnimationFrame(step);
-      }
-
-      function onMove(clientY) {
-        if (!isDragging || !ghost) return;
-        ghost.style.top = (clientY - ghostOffsetY) + 'px';
-
-        // Fast auto-scroll when near top/bottom of viewport
-        const VH = window.innerHeight;
-        const ZONE = 110; // trigger zone px from edge
-        if (clientY < ZONE) _startAutoScroll(-1);
-        else if (clientY > VH - ZONE) _startAutoScroll(1);
-        else _stopAutoScroll();
-
-        // Find which row we're over
-        const rows = Array.from(list.querySelectorAll('.adm-card-row:not([style*="display: none"])'));
-        let targetRow = null;
-        let targetRect = null;
-        for (const r of rows) {
-          const rRect = r.getBoundingClientRect();
-          if (clientY >= rRect.top && clientY <= rRect.bottom) {
-            targetRow = r; targetRect = rRect; break;
-          }
-        }
-        if (!targetRow) {
-          // Above first or below last
-          const first = rows[0], last = rows[rows.length-1];
-          if (first && clientY < first.getBoundingClientRect().top) targetRow = first;
-          else if (last) targetRow = last;
-        }
-        if (targetRow && targetRow !== lastOverRow) {
-          lastOverRow = targetRow;
-          const isAbove = clientY < targetRow.getBoundingClientRect().top + targetRow.getBoundingClientRect().height / 2;
-          if (isAbove) targetRow.parentNode.insertBefore(placeholder, targetRow);
-          else targetRow.parentNode.insertBefore(placeholder, targetRow.nextSibling);
-        }
-      }
-
-      function endDrag() {
-        if (!isDragging) return;
-        isDragging = false;
-        clearTimeout(pressTimer);
-        _stopAutoScroll();
-        // Remove dynamic drag touchmove listener
-        if (_rowDragTouchMove) { document.removeEventListener('touchmove', _rowDragTouchMove); _rowDragTouchMove = null; }
-
-        if (ghost) { ghost.remove(); ghost = null; }
-        row.style.display = '';
-        if (placeholder) {
-          placeholder.parentNode.insertBefore(row, placeholder);
-          placeholder.remove(); placeholder = null;
-        }
-
-        // Restore opacity
-        list.querySelectorAll('.adm-card-row').forEach(r => r.style.opacity = '');
-
-        // Update orderIds from current DOM order
-        const newOrder = Array.from(list.querySelectorAll('.adm-card-row')).map(r => r.dataset.reorderId);
-        if (JSON.stringify(newOrder) !== JSON.stringify(orderIds)) {
-          orderIds = newOrder;
-          // Update numbering
-          list.querySelectorAll('.adm-card-row').forEach((r, i) => {
-            const numEl = r.querySelector('.reorder-num');
-            if (numEl) numEl.textContent = '#' + String(i+1).padStart(2,'0');
-          });
-          confirmBtn.style.display = 'block';
-          if (navigator.vibrate) navigator.vibrate([20, 30, 20]);
-        }
-        lastOverRow = null;
-      }
-
-      // Touch events
-      handle.addEventListener('touchstart', e => {
-        const t = e.touches[0];
-        startY = t.clientY;
-        pressTimer = setTimeout(() => startDrag(t.clientY), 500);
-      }, {passive: true});
-
-      // Passive listener on row only to cancel pressTimer on scroll (no preventDefault needed)
-      row.addEventListener('touchmove', e => {
-        if (pressTimer && !isDragging) {
-          if (Math.abs(e.touches[0].clientY - startY) > 8) { clearTimeout(pressTimer); pressTimer = null; }
-        }
-      }, {passive: true});
-
-      document.addEventListener('touchend', e => {
-        clearTimeout(pressTimer); pressTimer = null;
-        if (isDragging) endDrag();
-      }, {passive: true});
-
-      // Mouse events (desktop)
-      handle.addEventListener('mousedown', e => {
-        startY = e.clientY;
-        pressTimer = setTimeout(() => startDrag(e.clientY), 500);
-        e.preventDefault();
-      });
-      document.addEventListener('mousemove', e => {
-        if (pressTimer && !isDragging) {
-          if (Math.abs(e.clientY - startY) > 8) { clearTimeout(pressTimer); pressTimer = null; }
-          return;
-        }
-        if (!isDragging) return;
-        onMove(e.clientY);
-      });
-      document.addEventListener('mouseup', () => {
-        clearTimeout(pressTimer); pressTimer = null;
-        if (isDragging) endDrag();
-      });
-
-      return row;
-    }
-
-    state.items.forEach((item, i) => list.appendChild(buildRow(item, i + 1)));
-    c.appendChild(list);
+    c.appendChild(grid);
   }
 
   // ── HOT tab ───────────────────────────────────────────────────
@@ -5997,203 +6093,61 @@ document.addEventListener('DOMContentLoaded', () => {
     form.appendChild(addBtn);
     c.appendChild(form);
 
-    // ── Photos list with hold-to-drag reorder ──
+    // ── Photos 3-per-row grid with long-press position move ──
     const h2 = document.createElement('div');
     h2.className = 'adm-section-head';
     h2.textContent = activeCatObj.icon + ' ' + activeCatObj.label + ' (' + items.length + ')';
     c.appendChild(h2);
 
     const hint2 = document.createElement('div');
-    hint2.style.cssText = 'font-size:10px;color:#ff6600;opacity:.7;text-align:center;padding:4px 0 8px;letter-spacing:.03em;';
-    hint2.textContent = '✋ Photo ko 1 second press karke kheecho — position badlo';
+    hint2.style.cssText = 'font-size:10px;color:#ff6600;opacity:.75;text-align:center;padding:4px 0 10px;letter-spacing:.03em;';
+    hint2.textContent = '✋ 2 sec press karo — position number se turant move karo';
     c.appendChild(hint2);
 
-    // Confirm reorder btn (hidden initially)
-    const confirmBtn2 = document.createElement('button');
-    confirmBtn2.id = 'galReorderConfirmBtn';
-    confirmBtn2.style.cssText = 'display:none;width:100%;padding:13px;border:none;border-radius:14px;background:linear-gradient(90deg,#ff6600,#ff8800);color:#fff;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:10px;box-shadow:0 0 18px rgba(255,102,0,.4);';
-    confirmBtn2.textContent = '✅ Confirm — Order Save Karo';
-    confirmBtn2.onclick = () => {
-      // Rebuild state.items: move this category items in new order, rest unchanged
-      const catIds = Array.from(galList.querySelectorAll('[data-gal-id]')).map(el => el.dataset.galId);
-      const idMap = {};
-      state.items.forEach(x => idMap[x.id] = x);
-      // Remove old cat items, insert in new order at same position
-      const nonCat = state.items.filter(i => !(i.type === 'gallery' && (i.tags||[]).includes(activeCatObj.tag)));
-      const catOrdered = catIds.map(id => idMap[id]).filter(Boolean);
-      // Insert cat items back at their original position range
-      const firstIdx = state.items.findIndex(i => i.type === 'gallery' && (i.tags||[]).includes(activeCatObj.tag));
-      if (firstIdx >= 0) {
-        nonCat.splice(firstIdx, 0, ...catOrdered);
-        state.items = nonCat;
-      } else {
-        state.items = [...catOrdered, ...nonCat];
-      }
-      persist();
-      confirmBtn2.style.display = 'none';
-      toast('🎉 Order permanently save ho gaya!');
-      // Renumber
-      galList.querySelectorAll('[data-gal-id]').forEach((el, i) => {
-        const numEl = el.querySelector('.gal-reorder-num');
-        if (numEl) numEl.textContent = '#' + String(i+1).padStart(2,'0');
-      });
-    };
-    c.appendChild(confirmBtn2);
-
-    const galList = document.createElement('div');
-    galList.id = 'galReorderList';
-    galList.style.cssText = 'display:grid;gap:8px;margin-top:4px;';
+    const galGrid = document.createElement('div');
+    galGrid.id = 'galReorderList';
+    galGrid.style.cssText = 'display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:2px;';
 
     if (!items.length) {
-      galList.innerHTML = '<div class="adm-empty">Abhi koi photo nahi is category mein</div>';
+      galGrid.innerHTML = '<div class="adm-empty" style="grid-column:1/-1;">Abhi koi photo nahi is category mein</div>';
     } else {
       items.forEach((it, i) => {
-        const row = buildGalRow(it, i + 1, galList, confirmBtn2, activeCatObj);
-        galList.appendChild(row);
+        const num = i + 1;
+        const cell = document.createElement('div');
+        cell.dataset.galId = it.id;
+        cell.style.cssText = 'position:relative;border-radius:10px;overflow:hidden;background:#111;border:1px solid rgba(255,102,0,.14);cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:manipulation;';
+
+        const imgEl = document.createElement('img');
+        imgEl.src = it.thumb || '';
+        imgEl.loading = 'lazy';
+        imgEl.style.cssText = 'width:100%;aspect-ratio:9/13;object-fit:cover;display:block;';
+        cell.appendChild(imgEl);
+
+        const badge = document.createElement('div');
+        badge.style.cssText = 'position:absolute;top:4px;left:4px;background:rgba(0,0,0,.82);color:#ff6600;font-size:9px;font-weight:900;padding:2px 5px;border-radius:5px;z-index:2;letter-spacing:.02em;';
+        badge.textContent = '#' + String(num).padStart(2,'0');
+        cell.appendChild(badge);
+
+        const delBtn = document.createElement('button');
+        delBtn.style.cssText = 'position:absolute;bottom:4px;right:3px;width:22px;height:22px;border:none;border-radius:6px;background:rgba(220,40,40,.85);color:#fff;font-size:10px;cursor:pointer;z-index:3;display:flex;align-items:center;justify-content:center;padding:0;';
+        delBtn.innerHTML = '🗑';
+        delBtn.onclick = (e) => { e.stopPropagation(); adminDeleteItem(it.id); };
+        cell.appendChild(delBtn);
+
+        let pressTimer = null;
+        const startPress = () => { pressTimer = setTimeout(() => { pressTimer = null; showAdminMoveDialog(it.id, num, 'gallery', activeCatObj.tag); }, 2000); };
+        const cancelPress = () => { clearTimeout(pressTimer); pressTimer = null; };
+        cell.addEventListener('touchstart', startPress, {passive:true});
+        cell.addEventListener('touchend', cancelPress, {passive:true});
+        cell.addEventListener('touchmove', cancelPress, {passive:true});
+        cell.addEventListener('mousedown', startPress);
+        cell.addEventListener('mouseup', cancelPress);
+        cell.addEventListener('mouseleave', cancelPress);
+
+        galGrid.appendChild(cell);
       });
     }
-    c.appendChild(galList);
-  }
-
-  function buildGalRow(it, num, galList, confirmBtn2, activeCatObj) {
-    const row = document.createElement('div');
-    row.dataset.galId = it.id;
-    row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:8px 10px;background:rgba(255,102,0,.06);border:1px solid rgba(255,102,0,.14);border-radius:14px;touch-action:none;user-select:none;-webkit-user-select:none;position:relative;';
-
-    // Drag handle
-    const handle = document.createElement('div');
-    handle.style.cssText = 'width:24px;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;flex:0 0 auto;cursor:grab;opacity:.55;';
-    handle.innerHTML = '<div style="width:12px;height:2px;background:#ff6600;border-radius:2px;"></div><div style="width:12px;height:2px;background:#ff6600;border-radius:2px;"></div><div style="width:12px;height:2px;background:#ff6600;border-radius:2px;"></div>';
-
-    const thumb = document.createElement('img');
-    thumb.src = it.thumb || '';
-    thumb.style.cssText = 'width:52px;height:64px;object-fit:cover;border-radius:8px;flex:0 0 auto;background:#111;';
-
-    const info = document.createElement('div');
-    info.style.cssText = 'flex:1;min-width:0;';
-    info.innerHTML = '<div style="font-size:12px;font-weight:700;color:#e0faff;"><span class="gal-reorder-num">#' + String(num).padStart(2,'0') + '</span> ' + (it.title||'Photo') + '</div>'
-      + '<div style="font-size:10px;color:#999;margin-top:2px;">🖼️ GALLERY</div>';
-
-    const delBtn = document.createElement('button');
-    delBtn.className = 'adm-del-btn';
-    delBtn.textContent = '🗑️';
-    delBtn.onclick = () => adminDeleteItem(it.id);
-
-    row.appendChild(handle);
-    row.appendChild(thumb);
-    row.appendChild(info);
-    row.appendChild(delBtn);
-
-    // ── Hold-to-drag logic ──
-    let pressTimer = null, isDragging = false, ghost = null;
-    let startY = 0, ghostOffsetY = 0, placeholder = null, lastOverRow = null;
-    let _autoScrollRAF2 = null;
-    let _galDragTouchMove = null;
-    function _stopAS2() { if (_autoScrollRAF2) { cancelAnimationFrame(_autoScrollRAF2); _autoScrollRAF2 = null; } }
-    function _startAS2(dir) {
-      _stopAS2();
-      const scroller = document.getElementById('adminContent');
-      if (!scroller) return;
-      function step() {
-        if (!isDragging) { _stopAS2(); return; }
-        scroller.scrollTop += dir * 20;
-        _autoScrollRAF2 = requestAnimationFrame(step);
-      }
-      _autoScrollRAF2 = requestAnimationFrame(step);
-    }
-
-    function startDragGal(clientY) {
-      isDragging = true;
-      if (navigator.vibrate) navigator.vibrate(30);
-      // Add touchmove listener only when drag actually starts
-      _galDragTouchMove = (e) => { e.preventDefault(); onMoveGal(e.touches[0].clientY); };
-      document.addEventListener('touchmove', _galDragTouchMove, {passive: false});
-      const rect = row.getBoundingClientRect();
-      ghostOffsetY = clientY - rect.top;
-      ghost = row.cloneNode(true);
-      ghost.style.cssText = 'position:fixed;left:' + rect.left + 'px;top:' + rect.top + 'px;width:' + rect.width + 'px;z-index:9999;pointer-events:none;opacity:.92;box-shadow:0 12px 40px rgba(255,102,0,.55),0 0 0 2px rgba(255,102,0,.45);border-radius:14px;transform:scale(1.03);background:rgba(20,20,20,.97);';
-      document.body.appendChild(ghost);
-      placeholder = document.createElement('div');
-      placeholder.style.cssText = 'height:' + rect.height + 'px;border-radius:14px;background:rgba(255,102,0,.08);border:2px dashed rgba(255,102,0,.35);';
-      row.parentNode.insertBefore(placeholder, row);
-      row.style.display = 'none';
-      galList.querySelectorAll('[data-gal-id]').forEach(r => { if (r !== row) r.style.opacity = '0.45'; });
-    }
-
-    function onMoveGal(clientY) {
-      if (!isDragging || !ghost) return;
-      ghost.style.top = (clientY - ghostOffsetY) + 'px';
-      const VH = window.innerHeight;
-      if (clientY < 110) _startAS2(-1);
-      else if (clientY > VH - 110) _startAS2(1);
-      else _stopAS2();
-      const rows = Array.from(galList.querySelectorAll('[data-gal-id]:not([style*="display: none"])'));
-      let targetRow = null;
-      for (const r of rows) {
-        const rRect = r.getBoundingClientRect();
-        if (clientY >= rRect.top && clientY <= rRect.bottom) { targetRow = r; break; }
-      }
-      if (!targetRow) {
-        const first = rows[0], last = rows[rows.length-1];
-        if (first && clientY < first.getBoundingClientRect().top) targetRow = first;
-        else if (last) targetRow = last;
-      }
-      if (targetRow && targetRow !== lastOverRow) {
-        lastOverRow = targetRow;
-        const isAbove = clientY < targetRow.getBoundingClientRect().top + targetRow.getBoundingClientRect().height / 2;
-        if (isAbove) targetRow.parentNode.insertBefore(placeholder, targetRow);
-        else targetRow.parentNode.insertBefore(placeholder, targetRow.nextSibling);
-      }
-    }
-
-    function endDragGal() {
-      if (!isDragging) return;
-      isDragging = false;
-      clearTimeout(pressTimer);
-      _stopAS2();
-      // Remove dynamic drag touchmove listener
-      if (_galDragTouchMove) { document.removeEventListener('touchmove', _galDragTouchMove); _galDragTouchMove = null; }
-      if (ghost) { ghost.remove(); ghost = null; }
-      row.style.display = '';
-      if (placeholder) { placeholder.parentNode.insertBefore(row, placeholder); placeholder.remove(); placeholder = null; }
-      galList.querySelectorAll('[data-gal-id]').forEach(r => r.style.opacity = '');
-      // Check if order changed
-      const newOrder = Array.from(galList.querySelectorAll('[data-gal-id]')).map(r => r.dataset.galId);
-      galList.querySelectorAll('[data-gal-id]').forEach((r, i) => {
-        const numEl = r.querySelector('.gal-reorder-num');
-        if (numEl) numEl.textContent = '#' + String(i+1).padStart(2,'0');
-      });
-      confirmBtn2.style.display = 'block';
-      if (navigator.vibrate) navigator.vibrate([20,30,20]);
-      lastOverRow = null;
-    }
-
-    handle.addEventListener('touchstart', e => {
-      const t = e.touches[0]; startY = t.clientY;
-      pressTimer = setTimeout(() => startDragGal(t.clientY), 500);
-    }, {passive: true});
-    // Passive listener on row only to cancel pressTimer on scroll
-    row.addEventListener('touchmove', e => {
-      if (pressTimer && !isDragging) {
-        if (Math.abs(e.touches[0].clientY - startY) > 8) { clearTimeout(pressTimer); pressTimer = null; }
-      }
-    }, {passive: true});
-    document.addEventListener('touchend', e => {
-      clearTimeout(pressTimer); pressTimer = null;
-      if (isDragging) endDragGal();
-    }, {passive: true});
-    handle.addEventListener('mousedown', e => {
-      startY = e.clientY; pressTimer = setTimeout(() => startDragGal(e.clientY), 500); e.preventDefault();
-    });
-    document.addEventListener('mousemove', e => {
-      if (pressTimer && !isDragging) { if (Math.abs(e.clientY - startY) > 8) { clearTimeout(pressTimer); pressTimer = null; } return; }
-      if (!isDragging) return; onMoveGal(e.clientY);
-    });
-    document.addEventListener('mouseup', () => {
-      clearTimeout(pressTimer); pressTimer = null; if (isDragging) endDragGal();
-    });
-
-    return row;
+    c.appendChild(galGrid);
   }
 
   // Add gallery photo with category tag
