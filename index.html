@@ -1820,13 +1820,9 @@ backface-visibility:hidden;
             <div id="adsterra-native-wrap" style="width:100%;margin:10px 0 0 0;min-height:120px;border-radius:16px;overflow:hidden;">
             </div>
             <!-- Big native banner placeholder -->
-            <div class="ad-banner-wide" style="margin-top:12px;padding:18px 16px;border-radius:18px;min-height:90px;align-items:center;">
-              <div style="flex:1;">
-                <div class="ad-label" style="font-size:9px;margin-bottom:6px;">🔥 Sponsored</div>
-                <div class="ad-copy" style="font-size:13px;font-weight:700;line-height:1.4;">Premium Content — Watch Now, No Limits</div>
-                <div style="font-size:10.5px;color:rgba(200,205,255,.6);margin-top:4px;">Exclusive access for members</div>
-              </div>
-              <div class="ad-pill" style="font-size:11px;padding:9px 14px;font-weight:900;">JOIN →</div>
+            <div class="ad-banner-wide" style="margin-top:12px;padding:12px;border-radius:18px;min-height:90px;max-height:120px;overflow:hidden;display:block;">
+              <script async="async" data-cfasync="false" src="https://pl29174038.profitablecpmratenetwork.com/f87907886d28938ef7c85e2052c5581f/invoke.js"></script>
+              <div id="container-f87907886d28938ef7c85e2052c5581f"></div>
             </div>
           </section>
 
@@ -2260,7 +2256,7 @@ backface-visibility:hidden;
 
     // Restore placeholder images from saved changes
     function restorePlaceholderImages() {
-      const allChanges = JSON.parse(localStorage.getItem(CHANGES_KEY) || '{}');
+      const allChanges = JSON.parse(localStorage.getItem('crystal_changes_v2') || '{}');
       if (window._fbEdChanges) Object.assign(allChanges, window._fbEdChanges);
       document.querySelectorAll('.ph-card[data-phid]').forEach(card => {
         const pid = card.dataset.phid;
@@ -2412,13 +2408,10 @@ backface-visibility:hidden;
         grid.innerHTML = visibleSlots.map((slot, idx) => {
           const cardHtml = galleryCardHTML(slot);
           const isAfter5 = (idx + 1) % 5 === 0 && idx + 1 < slots.length;
-          const bannerHtml = isAfter5 ? `
-            <div style="grid-column:1/-1;width:100%;margin:0;padding:0;">
-              <div style="display:flex;align-items:stretch;gap:12px;min-height:140px;padding:18px 20px;background:linear-gradient(90deg,rgba(255,102,0,.14),rgba(255,102,0,.10),rgba(255,102,0,.08));border:1px solid rgba(255,102,0,.18);border-radius:18px;color:#ff8800;font-size:14px;font-weight:800;letter-spacing:.05em;box-shadow:0 0 24px rgba(255,102,0,.08);">
-                <div style="display:flex;align-items:center;font-size:24px;flex-shrink:0;">Banner</div>
-                <div style="flex:1;display:flex;align-items:center;">Premium unlocked banner</div>
-                <span style="display:flex;align-items:center;font-size:12px;font-weight:900;color:#ff6600;background:rgba(255,102,0,.14);border:1px solid rgba(255,102,0,.28);padding:8px 16px;border-radius:999px;flex-shrink:0;">GET →</span>
-              </div>
+          const _galSlot = Math.floor((idx + 1) / 5);
+          const bannerHtml = (isAfter5 && _galSlot <= 2) ? `
+            <div style="grid-column:1/-1;width:100%;margin:4px 0;padding:0;">
+              <div id="container-f87907886d28938ef7c85e2052c5581f-gal-${_galSlot}" style="width:100%;border-radius:14px;overflow:hidden;border:1px solid rgba(255,102,0,.22);min-height:90px;max-height:120px;"></div>
             </div>
           ` : '';
           return cardHtml + bannerHtml;
@@ -2454,18 +2447,9 @@ backface-visibility:hidden;
         acc += cardHTML(item);
         if ((i + 1) % 10 === 0 && i + 1 < items.length) {
           const adImg = _pageAdImgsInline[_adImgIdx % _pageAdImgsInline.length]; _adImgIdx++;
-          acc += `<div style="grid-column:1/-1;width:100%;padding:6px 0 4px;position:relative;">
-            <div style="position:absolute;top:14px;right:8px;z-index:2;background:rgba(255,102,0,.88);color:#fff;font-size:9px;font-weight:900;padding:2px 6px;border-radius:4px;letter-spacing:.05em;">AD</div>
-            <div style="width:100%;border-radius:14px;overflow:hidden;border:1px solid rgba(255,102,0,.22);box-shadow:0 8px 28px rgba(0,0,0,.55);cursor:pointer;position:relative;">
-              <img src="${adImg}" style="width:100%;max-height:220px;object-fit:cover;object-position:center top;display:block;filter:brightness(.92) contrast(1.05);">
-              <div style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.75));display:flex;align-items:flex-end;padding:14px 16px;">
-                <div style="flex:1;">
-                  <div style="font-size:11px;font-weight:900;color:#ff8800;letter-spacing:.12em;text-transform:uppercase;margin-bottom:3px;">🔥 Sponsored</div>
-                  <div style="font-size:14px;font-weight:800;color:#fff;line-height:1.3;">Premium Content — Watch Now, No Limits</div>
-                </div>
-                <span style="font-size:12px;font-weight:900;color:#0f0f0f;background:linear-gradient(135deg,#ff6600,#ff8800);padding:7px 16px;border-radius:999px;white-space:nowrap;flex-shrink:0;box-shadow:0 0 14px rgba(255,102,0,.55);">JOIN →</span>
-              </div>
-            </div>
+          const _hotAdSlot = Math.floor((i + 1) / 10);
+          acc += `<div style="grid-column:1/-1;width:100%;padding:6px 0 4px;">
+            <div id="container-f87907886d28938ef7c85e2052c5581f-${_hotAdSlot}" style="width:100%;border-radius:14px;overflow:hidden;border:1px solid rgba(255,102,0,.22);box-shadow:0 8px 28px rgba(0,0,0,.55);min-height:100px;"></div>
           </div>`;
         }
         return acc;
@@ -2950,9 +2934,9 @@ backface-visibility:hidden;
           '</div></div>';
       });
       var bottomAdsHtml2 =
-        '<div class="list-ad" style="margin-top:8px;border-radius:12px;border:1px solid rgba(255,102,0,.25);">' +
-          '<div><div class="ad-label">Sponsored</div><div class="ad-copy">Exclusive deals — members only access.</div></div>' +
-          '<div class="ad-pill">Join →</div>' +
+        '<div style="margin-top:8px;border-radius:12px;overflow:hidden;">' +
+          '<iframe data-aa="2434919" src="//acceptable.a-ads.com/2434919/?size=Adaptive&background_color=8d4545"' +
+          ' style="border:0;padding:0;width:100%;height:auto;min-height:80px;overflow:hidden;display:block;"></iframe>' +
         '</div>' +
         '<div class="ad-banner-wide" style="margin-top:10px;padding:18px 16px;border-radius:16px;min-height:90px;align-items:center;cursor:pointer;margin-bottom:8px;">' +
           '<div style="flex:1;">' +
@@ -3123,9 +3107,11 @@ backface-visibility:hidden;
           </div>`;
       });
       const bottomAdsHtml = `
-        <div class="list-ad" style="margin-top:8px;border-radius:12px;border:1px solid rgba(255,102,0,.25);">
-          <div><div class="ad-label">Sponsored</div><div class="ad-copy">Exclusive deals — members only access.</div></div>
-          <div class="ad-pill">Join →</div>
+        <div style="margin-top:8px;border-radius:12px;overflow:hidden;">
+          <!-- BEGIN AADS AD UNIT 2434919 -->
+          <iframe data-aa='2434919' src='//acceptable.a-ads.com/2434919/?size=Adaptive&background_color=8d4545'
+            style='border:0;padding:0;width:100%;height:auto;min-height:80px;overflow:hidden;display:block;'></iframe>
+          <!-- END AADS AD UNIT 2434919 -->
         </div>
         <div class="ad-banner-wide" style="margin-top:10px;padding:18px 16px;border-radius:16px;min-height:90px;align-items:center;cursor:pointer;margin-bottom:8px;">
           <div style="flex:1;">
@@ -4574,6 +4560,55 @@ document.addEventListener('DOMContentLoaded', () => {
 })();
 </script>
 
+
+<script>
+// ProfitableCPM inline ads loader + auto-refresh (30-50s random)
+(function() {
+  var CPM_SRC = 'https://pl29174038.profitablecpmratenetwork.com/f87907886d28938ef7c85e2052c5581f/invoke.js';
+  var AD_SLOTS = [
+    'container-f87907886d28938ef7c85e2052c5581f-1',
+    'container-f87907886d28938ef7c85e2052c5581f-2',
+    'container-f87907886d28938ef7c85e2052c5581f-gal-1',
+    'container-f87907886d28938ef7c85e2052c5581f-gal-2'
+  ];
+
+  function loadAdScript(containerId) {
+    var el = document.getElementById(containerId);
+    if (!el) return;
+    el.innerHTML = '';
+    var s = document.createElement('script');
+    s.async = true;
+    s.setAttribute('data-cfasync', 'false');
+    s.src = CPM_SRC + '?r=' + Math.random();
+    el.appendChild(s);
+  }
+
+  function scheduleRefresh(containerId) {
+    var delay = (Math.floor(Math.random() * 21) + 30) * 1000; // 30-50s random
+    setTimeout(function() {
+      loadAdScript(containerId);
+      scheduleRefresh(containerId);
+    }, delay);
+  }
+
+  function initAds() {
+    AD_SLOTS.forEach(function(id) {
+      loadAdScript(id);
+      scheduleRefresh(id);
+    });
+  }
+
+  // Wait for containers to be in DOM (rendered after grid build)
+  var attempts = 0;
+  var check = setInterval(function() {
+    var found = AD_SLOTS.filter(function(id) { return document.getElementById(id); });
+    if (found.length > 0 || attempts++ > 20) {
+      clearInterval(check);
+      initAds();
+    }
+  }, 500);
+})();
+</script>
 </body>
   <script>
   /* ============================================================
