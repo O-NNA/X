@@ -13,8 +13,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <!-- JuicyAds Native Interstitials v1.0 -->
-  <script type="text/javascript" data-id="juicyads-native-ads" data-ad-zone="1115982" data-targets="a" src="https://js.juicyads.com/juicyads.native-ads.min.js"></script>
+  <!-- JuicyAds Popunder — fires on first user interaction -->
+  <script type="text/javascript" src="https://js.juicyads.com/jp.php?u=1115982&t=l"></script>
 
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -107,7 +107,7 @@
 
     /* ── PERFORMANCE: GPU scroll optimization ── */
     html { scroll-behavior: smooth; }
-    body { overscroll-behavior-y: contain; }
+    body { overscroll-behavior-y: auto; }
     .grid { transform: translateZ(0); }
 
     /* Cards - backface only, NO contain:paint (causes white flash on Android) */
@@ -212,7 +212,8 @@
       color:var(--text);
       background: #0f0f0f;
       overflow-x:hidden;
-      overscroll-behavior:none;
+      overscroll-behavior-y: auto;
+      -webkit-overflow-scrolling: touch;
       -webkit-font-smoothing:antialiased;
       text-rendering:optimizeLegibility;
     }
@@ -563,11 +564,12 @@
 
     .grid{
       display:grid;
-      gap:0px;
-      grid-template-columns:1fr;
+      column-gap:8px;
+      row-gap:0px;
+      grid-template-columns:1fr 1fr;
     }
-    @media (min-width: 768px){.grid{grid-template-columns:repeat(2, minmax(0,1fr));gap:0px;}}
-    @media (min-width: 1200px){.grid{grid-template-columns:repeat(3, minmax(0,1fr));gap:0px;}}
+    @media (min-width: 768px){.grid{grid-template-columns:repeat(2, minmax(0,1fr));column-gap:8px;row-gap:0px;}}
+    @media (min-width: 1200px){.grid{grid-template-columns:repeat(3, minmax(0,1fr));column-gap:8px;row-gap:0px;}}
 
     /* ── PornHub-style card ── */
     .card{
@@ -578,7 +580,7 @@
       border:none;
       background:transparent;
       animation:none;
-      padding:0 0 16px 0;
+      padding:0 0 8px 0;
     }
     .card-top{
       position:absolute;
@@ -596,7 +598,7 @@
     .card-media{
       position:relative;
       width:100%;
-      aspect-ratio:16/9;
+      aspect-ratio:5/4;
       overflow:hidden;
       background:#111;
       border-radius:0;
@@ -608,20 +610,20 @@
     .card-media::before{ display:none; }
     .card-media::after{ display:none; }
     .card-footer{
-      padding:7px 10px 0;
+      padding:3px 6px 0;
       display:flex;
       flex-direction:column;
-      gap:3px;
+      gap:1px;
       background:transparent;
     }
     .card-title{
       margin:0;
-      font-size:14px;
+      font-size:8px;
       font-weight:600;
-      line-height:1.3;
+      line-height:1.2;
       color:#f5f5f5;
       display:-webkit-box;
-      -webkit-line-clamp:2;
+      -webkit-line-clamp:1;
       -webkit-box-orient:vertical;
       overflow:hidden;
     }
@@ -629,24 +631,24 @@
       display:flex;
       justify-content:space-between;
       align-items:center;
-      gap:6px;
-      font-size:12px;
+      gap:2px;
+      font-size:7px;
       color:#888;
       font-weight:500;
-      margin-top:2px;
+      margin-top:1px;
     }
     /* Channel name row */
     .card-channel{
       display:flex;
       align-items:center;
-      gap:5px;
-      font-size:12px;
+      gap:3px;
+      font-size:8px;
       color:#aaa;
       font-weight:600;
     }
-    .mini-actions{display:flex;gap:4px}
+    .mini-actions{display:flex;gap:2px}
     .mini{
-      width:24px;height:24px;
+      width:16px;height:16px;
       border:none;
       border-radius:50%;
       cursor:pointer;
@@ -657,7 +659,7 @@
       transition:color .15s;
     }
     .mini:hover{color:#ff6600;}
-    .mini svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    .mini svg{width:9px;height:9px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 
     .footer-nav{
       position:fixed;
@@ -983,8 +985,8 @@
     .ads-section{overflow:hidden;border-radius:22px;margin:10px 14px 14px;}
     .ad-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 0 10px 0;}
     .ad-card{
-      min-height:99px;border-radius:16px;padding:12px;
-      display:flex;flex-direction:column;justify-content:space-between;gap:8px;
+      min-height:140px;border-radius:18px;padding:16px;
+      display:flex;flex-direction:column;justify-content:space-between;gap:10px;
       border:1px solid rgba(255,102,0,.35);
       background:linear-gradient(135deg,rgba(255,102,0,.32),rgba(255,102,0,.10) 52%,rgba(255,0,204,.22)),rgba(6,5,18,.95);
       position:relative;overflow:hidden;cursor:pointer;
@@ -1725,10 +1727,17 @@ backface-visibility:hidden;
 
   <div class="player" id="playerModal">
     <div class="modal-shell">
-      <div class="player-top" style="padding:6px 10px;">
-        <button class="icon-btn" id="closePlayer" aria-label="Close player">
+      <div class="player-top" style="padding:6px 10px;overflow:hidden;">
+        <button class="icon-btn" id="closePlayer" aria-label="Close player" style="flex-shrink:0;">
           <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
         </button>
+        <!-- Ad Banner — right of X, scaled 71.5% -->
+        <div style="flex:1;overflow:hidden;height:50px;display:flex;align-items:center;">
+          <div style="transform:scale(0.715);transform-origin:left center;width:320px;height:50px;flex-shrink:0;">
+            <script>atOptions={'key':'a9b9df593df6ff27e72dbab57fd73965','format':'iframe','height':50,'width':320,'params':{}};</script>
+            <script src="https://www.highperformanceformat.com/a9b9df593df6ff27e72dbab57fd73965/invoke.js"></script>
+          </div>
+        </div>
       </div>
       <div class="player-body">
         <!-- LEFT: ads first (top), then video + controls (bottom) -->
@@ -1800,25 +1809,24 @@ backface-visibility:hidden;
           <!-- Ads Section — NEECHE (video ke baad) -->
           <section class="ads-section">
             <div class="ad-grid">
-              <div class="ad-card">
-                <div class="ad-label">Ad</div>
-                <div class="ad-copy">Premium stream placement for creators and brands.</div>
-                <div class="ad-pill">Learn More →</div>
-              </div>
-              <div class="ad-card">
-                <div class="ad-copy">High-visibility dark premium advertising spot.</div>
-                <div class="ad-pill">Explore →</div>
+              <div class="ad-card" style="overflow:hidden;padding:0;">
+                <!-- BEGIN AADS AD UNIT 2434919 -->
+                <iframe data-aa='2434919' src='//acceptable.a-ads.com/2434919/?size=Adaptive&background_color=8d4545'
+                  style='border:0;padding:0;width:100%;height:100%;min-height:120px;overflow:hidden;display:block;'></iframe>
+                <!-- END AADS AD UNIT 2434919 -->
               </div>
             </div>
-            <!-- Ad Slot — Native Banner -->
-            <div id="adsterra-native-wrap" style="width:100%;margin:0 0 10px 0;min-height:60px;">
+            <!-- Ad Slot — Native Banner (bada) -->
+            <div id="adsterra-native-wrap" style="width:100%;margin:10px 0 0 0;min-height:120px;border-radius:16px;overflow:hidden;">
             </div>
-            <div class="ad-banner-wide" style="margin-top:10px;padding:10px 13px;border-radius:14px;">
-              <div>
-                <div class="ad-label" style="font-size:8.5px;">Sponsored</div>
-                <div class="ad-copy" style="font-size:10px;">Boost your reach with targeted placements across premium streaming audiences.</div>
+            <!-- Big native banner placeholder -->
+            <div class="ad-banner-wide" style="margin-top:12px;padding:18px 16px;border-radius:18px;min-height:90px;align-items:center;">
+              <div style="flex:1;">
+                <div class="ad-label" style="font-size:9px;margin-bottom:6px;">🔥 Sponsored</div>
+                <div class="ad-copy" style="font-size:13px;font-weight:700;line-height:1.4;">Premium Content — Watch Now, No Limits</div>
+                <div style="font-size:10.5px;color:rgba(200,205,255,.6);margin-top:4px;">Exclusive access for members</div>
               </div>
-              <div class="ad-pill" style="font-size:9px;padding:5px 8px;">Explore →</div>
+              <div class="ad-pill" style="font-size:11px;padding:9px 14px;font-weight:900;">JOIN →</div>
             </div>
           </section>
 
@@ -2358,11 +2366,7 @@ backface-visibility:hidden;
       `;
     }
 
-    const PAGE_SIZE = 50;
-    let currentPage = 1;
-
     window.render = function render(resetPage = true) {
-      if (resetPage) currentPage = 1;
       const grid = $('#cardGrid');
       const list = getFilteredItems();
       $('#sectionTitle').textContent = state.tab === 'anime' ? 'Movie' : state.tab[0].toUpperCase() + state.tab.slice(1);
@@ -2371,9 +2375,8 @@ backface-visibility:hidden;
 
       let items;
       if (state.tab === 'gallery') {
-        grid.style.gridTemplateColumns = '1fr';
+        grid.style.gridTemplateColumns = '1fr 1fr';
         grid.style.gap = '14px';
-        // Desktop: limit gallery width so portrait photos don't stretch full screen
         const _isMobGrid = window.innerWidth <= 768;
         grid.style.maxWidth = _isMobGrid ? '' : '480px';
         grid.style.margin = _isMobGrid ? '' : '0 auto';
@@ -2440,34 +2443,35 @@ backface-visibility:hidden;
         items = list;
       }
 
-      const totalPages = Math.ceil(items.length / PAGE_SIZE);
-      const start = (currentPage - 1) * PAGE_SIZE;
-      const visible = items.slice(start, start + PAGE_SIZE);
-
-      // Insert native banner after every 10 cards
-      const adBanners = [
-        { icon:'Banner', text:'Premium unlocked content', cta:'GET →' },
-        { icon:'Speed', text:'HD streaming, no buffering', cta:'JOIN →' },
-        { icon:'VIP', text:'VIP access with 4K quality', cta:'TRY →' },
-        { icon:'Premium', text:'Special content for members', cta:'OPEN →' },
+      // ── INFINITE SCROLL: sab cards ek saath, pagination nahi ──
+      const _pageAdImgsInline = [
+        'https://i.postimg.cc/wMfZkzr2/IMG_20260413_201132.jpg',
+        'https://i.postimg.cc/L5CwVSWL/Gjbokupa_IAA7LQ4.jpg',
+        'https://i.postimg.cc/BbYkC3zK/image_14.jpg',
       ];
-      let adIdx = 0;
-      const cardsWithAds = visible.reduce((acc, item, i) => {
+      let _adImgIdx = 0;
+      const cardsWithAds = items.reduce((acc, item, i) => {
         acc += cardHTML(item);
-        if ((i + 1) % 10 === 0 && i + 1 < visible.length) {
-          const ad = adBanners[adIdx % adBanners.length]; adIdx++;
-          acc += `<div style="grid-column:1/-1;width:100%;padding:4px 0 8px;">
-            <div style="display:flex;align-items:center;gap:12px;padding:14px 18px;background:linear-gradient(90deg,rgba(255,102,0,.13),rgba(255,102,0,.09),rgba(255,102,0,.06));border:1px solid rgba(255,102,0,.22);border-radius:16px;color:#ff8800;font-size:13px;font-weight:800;letter-spacing:.04em;box-shadow:0 0 20px rgba(255,102,0,.07);">
-              <span style="font-size:20px;flex:0 0 auto;">${ad.icon}</span>
-              <span style="flex:1;line-height:1.35;">${ad.text}</span>
-              <span style="font-size:11px;font-weight:900;color:#ff6600;background:rgba(255,102,0,.14);border:1px solid rgba(255,102,0,.30);padding:5px 14px;border-radius:999px;flex-shrink:0;white-space:nowrap;">${ad.cta}</span>
+        if ((i + 1) % 10 === 0 && i + 1 < items.length) {
+          const adImg = _pageAdImgsInline[_adImgIdx % _pageAdImgsInline.length]; _adImgIdx++;
+          acc += `<div style="grid-column:1/-1;width:100%;padding:6px 0 4px;position:relative;">
+            <div style="position:absolute;top:14px;right:8px;z-index:2;background:rgba(255,102,0,.88);color:#fff;font-size:9px;font-weight:900;padding:2px 6px;border-radius:4px;letter-spacing:.05em;">AD</div>
+            <div style="width:100%;border-radius:14px;overflow:hidden;border:1px solid rgba(255,102,0,.22);box-shadow:0 8px 28px rgba(0,0,0,.55);cursor:pointer;position:relative;">
+              <img src="${adImg}" style="width:100%;max-height:220px;object-fit:cover;object-position:center top;display:block;filter:brightness(.92) contrast(1.05);">
+              <div style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.75));display:flex;align-items:flex-end;padding:14px 16px;">
+                <div style="flex:1;">
+                  <div style="font-size:11px;font-weight:900;color:#ff8800;letter-spacing:.12em;text-transform:uppercase;margin-bottom:3px;">🔥 Sponsored</div>
+                  <div style="font-size:14px;font-weight:800;color:#fff;line-height:1.3;">Premium Content — Watch Now, No Limits</div>
+                </div>
+                <span style="font-size:12px;font-weight:900;color:#0f0f0f;background:linear-gradient(135deg,#ff6600,#ff8800);padding:7px 16px;border-radius:999px;white-space:nowrap;flex-shrink:0;box-shadow:0 0 14px rgba(255,102,0,.55);">JOIN →</span>
+              </div>
             </div>
           </div>`;
         }
         return acc;
       }, '');
 
-      grid.innerHTML = cardsWithAds + renderPagination(currentPage, totalPages);
+      grid.innerHTML = cardsWithAds;
 
       attachCardEvents();
       updateCounts();
@@ -2477,74 +2481,8 @@ backface-visibility:hidden;
       setTimeout(() => setupLazyReveal(), 0);
     }
 
-    const _pageAdImgs = [
-      'https://i.postimg.cc/wMfZkzr2/IMG_20260413_201132.jpg',
-      'https://i.postimg.cc/L5CwVSWL/Gjbokupa_IAA7LQ4.jpg',
-      'https://i.postimg.cc/BbYkC3zK/image_14.jpg',
-    ];
 
-    function renderPagination(page, total) {
-      if (total <= 1) return '';
 
-      // Ad banner above pagination (random rotate)
-      const adImg = _pageAdImgs[(page - 1) % _pageAdImgs.length];
-      const adHtml = `
-        <div style="grid-column:1/-1;width:100%;padding:6px 0 4px;position:relative;">
-          <div style="position:absolute;top:14px;right:8px;z-index:2;background:rgba(255,102,0,.88);color:#fff;font-size:9px;font-weight:900;padding:2px 6px;border-radius:4px;letter-spacing:.05em;">AD</div>
-          <div style="width:100%;border-radius:14px;overflow:hidden;border:1px solid rgba(255,102,0,.22);box-shadow:0 8px 28px rgba(0,0,0,.55);cursor:pointer;position:relative;">
-            <img src="${adImg}" style="width:100%;max-height:220px;object-fit:cover;object-position:center top;display:block;filter:brightness(.92) contrast(1.05);">
-            <div style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.75));display:flex;align-items:flex-end;padding:14px 16px;">
-              <div style="flex:1;">
-                <div style="font-size:11px;font-weight:900;color:#ff8800;letter-spacing:.12em;text-transform:uppercase;margin-bottom:3px;">🔥 Sponsored</div>
-                <div style="font-size:14px;font-weight:800;color:#fff;line-height:1.3;">Premium Content — Watch Now, No Limits</div>
-              </div>
-              <span style="font-size:12px;font-weight:900;color:#0f0f0f;background:linear-gradient(135deg,#ff6600,#ff8800);padding:7px 16px;border-radius:999px;white-space:nowrap;flex-shrink:0;box-shadow:0 0 14px rgba(255,102,0,.55);">JOIN →</span>
-            </div>
-          </div>
-        </div>`;
-
-      const range = 2;
-      let startP = Math.max(1, page - range);
-      let endP = Math.min(total, page + range);
-      if (endP - startP < 4) {
-        if (startP === 1) endP = Math.min(total, startP + 4);
-        else startP = Math.max(1, endP - 4);
-      }
-
-      let btns = '';
-      for (let p = startP; p <= endP; p++) {
-        const active = p === page;
-        btns += `<button onclick="window.gotoPage(${p})" style="min-width:39px;height:39px;padding:0 10px;border:none;border-radius:10px;font-size:13px;font-weight:${active?'900':'700'};cursor:pointer;transition:all .18s;letter-spacing:-.01em;${active
-          ? 'background:linear-gradient(135deg,#ff5500,#ff8800);color:#fff;box-shadow:0 0 0 2px rgba(255,102,0,.35),0 6px 20px rgba(255,102,0,.50);transform:scale(1.08);'
-          : 'background:rgba(255,102,0,.10);border:1.5px solid rgba(255,102,0,.28);color:#ff8800;box-shadow:0 2px 8px rgba(0,0,0,.3);'}">${p}</button>`;
-      }
-
-      const prevDisabled = page <= 1;
-      const nextDisabled = page >= total;
-      return adHtml + `<div style="grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:10px;padding:16px 0 10px;flex-wrap:wrap;">
-        <button onclick="window.gotoPage(${page-1})" ${prevDisabled?'disabled':''} style="min-width:56px;height:39px;padding:0 12px;border:none;border-radius:10px;font-size:12px;font-weight:800;cursor:${prevDisabled?'not-allowed':'pointer'};transition:all .18s;${prevDisabled
-          ? 'background:rgba(255,102,0,.05);color:rgba(255,102,0,.25);border:1.5px solid rgba(255,102,0,.10);'
-          : 'background:linear-gradient(135deg,#ff5500,#ff8800);color:#fff;box-shadow:0 0 0 2px rgba(255,102,0,.25),0 6px 22px rgba(255,102,0,.45);'}">‹ Prev</button>
-        ${btns}
-        <button onclick="window.gotoPage(${page+1})" ${nextDisabled?'disabled':''} style="min-width:56px;height:39px;padding:0 12px;border:none;border-radius:10px;font-size:12px;font-weight:800;cursor:${nextDisabled?'not-allowed':'pointer'};transition:all .18s;${nextDisabled
-          ? 'background:rgba(255,102,0,.05);color:rgba(255,102,0,.25);border:1.5px solid rgba(255,102,0,.10);'
-          : 'background:linear-gradient(135deg,#ff5500,#ff8800);color:#fff;box-shadow:0 0 0 2px rgba(255,102,0,.25),0 6px 22px rgba(255,102,0,.45);'}">Next ›</button>
-      </div>`;
-    }
-
-    window.gotoPage = function(p) {
-      const list = getFilteredItems();
-      let items;
-      if (state.tab === 'save') items = state.items.filter(i => state.saved.includes(i.id));
-      else items = list;
-      const total = Math.ceil(items.length / PAGE_SIZE);
-      if (p < 1 || p > total) return;
-      currentPage = p;
-      render(false);
-      // Scroll to top of grid
-      const gs = document.getElementById('gridSection');
-      if (gs) gs.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    };
 
     // ══════════════════════════════════════════
     // PROFILE PAGE
@@ -3011,7 +2949,20 @@ backface-visibility:hidden;
             '<div class="chip-row">' + (v.tags||[]).slice(0,2).map(function(t){ return '<span class="chip">'+t+'</span>'; }).join('') + '</div>' +
           '</div></div>';
       });
-      recListEl.innerHTML = html;
+      var bottomAdsHtml2 =
+        '<div class="list-ad" style="margin-top:8px;border-radius:12px;border:1px solid rgba(255,102,0,.25);">' +
+          '<div><div class="ad-label">Sponsored</div><div class="ad-copy">Exclusive deals — members only access.</div></div>' +
+          '<div class="ad-pill">Join →</div>' +
+        '</div>' +
+        '<div class="ad-banner-wide" style="margin-top:10px;padding:18px 16px;border-radius:16px;min-height:90px;align-items:center;cursor:pointer;margin-bottom:8px;">' +
+          '<div style="flex:1;">' +
+            '<div class="ad-label" style="font-size:9px;margin-bottom:6px;">🔥 Sponsored</div>' +
+            '<div class="ad-copy" style="font-size:13px;font-weight:700;line-height:1.4;">Premium Content — No Limits</div>' +
+            '<div style="font-size:10.5px;color:rgba(200,205,255,.6);margin-top:4px;">Exclusive access for members</div>' +
+          '</div>' +
+          '<div class="ad-pill" style="font-size:11px;padding:9px 14px;font-weight:900;">JOIN →</div>' +
+        '</div>';
+      recListEl.innerHTML = html + bottomAdsHtml2;
       setTimeout(function() {
         var nodes = document.querySelectorAll('#recommendedList [data-rec-id]');
         nodes.forEach(function(node) {
@@ -3171,7 +3122,20 @@ backface-visibility:hidden;
             </div>
           </div>`;
       });
-      recListEl.innerHTML = html;
+      const bottomAdsHtml = `
+        <div class="list-ad" style="margin-top:8px;border-radius:12px;border:1px solid rgba(255,102,0,.25);">
+          <div><div class="ad-label">Sponsored</div><div class="ad-copy">Exclusive deals — members only access.</div></div>
+          <div class="ad-pill">Join →</div>
+        </div>
+        <div class="ad-banner-wide" style="margin-top:10px;padding:18px 16px;border-radius:16px;min-height:90px;align-items:center;cursor:pointer;margin-bottom:8px;">
+          <div style="flex:1;">
+            <div class="ad-label" style="font-size:9px;margin-bottom:6px;">🔥 Sponsored</div>
+            <div class="ad-copy" style="font-size:13px;font-weight:700;line-height:1.4;">Premium Content — No Limits</div>
+            <div style="font-size:10.5px;color:rgba(200,205,255,.6);margin-top:4px;">Exclusive access for members</div>
+          </div>
+          <div class="ad-pill" style="font-size:11px;padding:9px 14px;font-weight:900;">JOIN →</div>
+        </div>`;
+      recListEl.innerHTML = html + bottomAdsHtml;
       setTimeout(() => {
         $$('#recommendedList [data-rec-id]').forEach(node => node.onclick = () => openPlayer(node.dataset.recId));
       }, 0);
@@ -3414,18 +3378,22 @@ backface-visibility:hidden;
       function wireFrame() {
         const fr = frame();
         if (!fr) return;
-        fr.addEventListener('touchstart', handleFrameTap, { passive: true });
-        fr.addEventListener('click', handleFrameTap);
+        let _tfired = false;
+        fr.addEventListener('touchstart', (e) => { _tfired = true; handleFrameTap(e); }, { passive: true });
+        fr.addEventListener('click', (e) => { if (_tfired) { _tfired = false; return; } handleFrameTap(e); });
         blockZoom();
       }
 
       // Called every time player opens to refresh state
       window.initVCOverlay = function(item) {
-        setupSeek();
-        setupVol();
-        setupPlayBtn();
-        setupActionBtns();
-        wireFrame();
+        if (!window._vcInitDone) {
+          setupSeek();
+          setupVol();
+          setupPlayBtn();
+          setupActionBtns();
+          wireFrame();
+          window._vcInitDone = true;
+        }
 
         const v = vid();
         if (v) {
@@ -7009,99 +6977,74 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <script>
 /* ═══════════════════════════════════════════════════════════════════
-   JUICYADS INTERSTITIAL SYSTEM
-   Time schedule: 30s→+10m→+15m→+25m→+35m→+40m→+1h→+2h→+3h→+4h→+5h
-   Click cycle  : show on clicks 1,3,5,7,10 — repeat every 10
+   JUICYADS POPUNDER — TIMER SYSTEM v3
+   Schedule (page load se):
+     30s → +2min → +8min → +15min → +20min → +30min → +45min
+     → +1hr → +1hr → +1hr → +1hr  (5 ghante tak)
+   Logic: timer expire hone ke baad NEXT user click/tap pe ad fire
+   Browser security: popunder bina user gesture ke nahi khulti
 ═══════════════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
 
-  var TIME_DELAYS = [
-    30 * 1000,
-    10 * 60 * 1000,
-    15 * 60 * 1000,
-    25 * 60 * 1000,
-    35 * 60 * 1000,
-    40 * 60 * 1000,
-    1  * 60 * 60 * 1000,
-    2  * 60 * 60 * 1000,
-    3  * 60 * 60 * 1000,
-    4  * 60 * 60 * 1000,
-    5  * 60 * 60 * 1000
+  /* ── Time intervals (ek ad ke BAAD kitni der mein agli) ── */
+  var INTERVALS = [
+    30 * 1000,           /* 30 seconds */
+    2  * 60 * 1000,      /* 2 minutes  */
+    8  * 60 * 1000,      /* 8 minutes  */
+    15 * 60 * 1000,      /* 15 minutes */
+    20 * 60 * 1000,      /* 20 minutes */
+    30 * 60 * 1000,      /* 30 minutes */
+    45 * 60 * 1000,      /* 45 minutes */
+    60 * 60 * 1000,      /* 1 hour     */
+    60 * 60 * 1000,      /* 1 hour     */
+    60 * 60 * 1000,      /* 1 hour     */
+    60 * 60 * 1000       /* 1 hour  → total ~5hr 30min */
   ];
 
-  /* click positions (in cycle of 10) jahan ad dikhega — 0 = 10th */
-  var SHOW_POS = { 1:1, 3:1, 5:1, 7:1, 0:1 };
+  var adReady  = false;   /* timer expire hua ya nahi */
+  var idx      = 0;       /* current interval index  */
+  var _guard   = false;   /* double-fire guard       */
 
-  var LS = 'ns_iad_v2';
-  function getState() { try { return JSON.parse(localStorage.getItem(LS)) || {}; } catch(e) { return {}; } }
-  function saveState(s) { try { localStorage.setItem(LS, JSON.stringify(s)); } catch(e) {} }
+  /* ── Script reinject = popunder trigger ── */
+  function firePopunder() {
+    if (_guard) return;
+    _guard = true;
+    setTimeout(function () { _guard = false; }, 3000);
 
-  /* ── Core show function ── */
-  function showAd() {
-    try {
-      if (window.juicyadsShowInterstitial)                                { window.juicyadsShowInterstitial(); return; }
-      if (window.JuicyAds && typeof window.JuicyAds.show === 'function') { window.JuicyAds.show(); return; }
-      if (window.JuicyAds && typeof window.JuicyAds.showInterstitial === 'function') { window.JuicyAds.showInterstitial(); return; }
-      /* Fallback: re-inject script to re-trigger */
-      var old = document.getElementById('_jad_trig');
-      if (old) old.remove();
-      var s = document.createElement('script');
-      s.id = '_jad_trig';
-      s.type = 'text/javascript';
-      s.setAttribute('data-id', 'juicyads-native-ads');
-      s.setAttribute('data-ad-zone', '1115982');
-      s.setAttribute('data-targets', 'a');
-      s.src = 'https://js.juicyads.com/juicyads.native-ads.min.js?t=' + Date.now();
-      document.head.appendChild(s);
-    } catch(e) {}
+    var old = document.getElementById('_jad_pop');
+    if (old) old.remove();
+    var s = document.createElement('script');
+    s.id  = '_jad_pop';
+    s.src = 'https://js.juicyads.com/jp.php?u=1115982&t=l&_=' + Date.now();
+    document.head.appendChild(s);
   }
 
-  /* ── Time-based schedule ── */
-  function initTimeSchedule() {
-    var st = getState();
-    var now = Date.now();
-    if (!st.sessionStart) { st.sessionStart = now; st.timeIdx = 0; saveState(st); }
-
-    var elapsed = now - st.sessionStart;
-    var idx = st.timeIdx || 0;
-    var accumulated = 0;
-    for (var i = 0; i < idx; i++) accumulated += TIME_DELAYS[i];
-    while (idx < TIME_DELAYS.length && accumulated + TIME_DELAYS[idx] <= elapsed) {
-      accumulated += TIME_DELAYS[idx]; idx++;
-    }
-    st.timeIdx = idx; saveState(st);
-
-    function scheduleNext() {
-      var s2 = getState();
-      var ci = s2.timeIdx || 0;
-      if (ci >= TIME_DELAYS.length) return;
-      var now2 = Date.now();
-      var elapsed2 = now2 - s2.sessionStart;
-      var accum2 = 0;
-      for (var j = 0; j < ci; j++) accum2 += TIME_DELAYS[j];
-      var delay = Math.max(0, accum2 + TIME_DELAYS[ci] - elapsed2);
-      setTimeout(function () {
-        showAd();
-        var s3 = getState();
-        s3.timeIdx = (s3.timeIdx || 0) + 1;
-        saveState(s3);
-        scheduleNext();
-      }, delay);
-    }
-    scheduleNext();
+  /* ── User gesture handler ── */
+  function onUserGesture() {
+    if (!adReady) return;
+    adReady = false;
+    firePopunder();
   }
 
-  /* ── Click-based system ── */
-  var _clickCount = (function () { var s = getState(); return s.vidClicks || 0; })();
+  document.addEventListener('click',      onUserGesture);
+  document.addEventListener('touchstart', onUserGesture, { passive: true });
 
-  window.nsTrackVideoClick = function () {
-    _clickCount++;
-    var st = getState(); st.vidClicks = _clickCount; saveState(st);
-    if (SHOW_POS[_clickCount % 10] === 1) showAd();
-  };
+  /* ── Timer chain ── */
+  function scheduleNext() {
+    if (idx >= INTERVALS.length) return;
+    var delay = INTERVALS[idx++];
+    setTimeout(function () {
+      adReady = true;       /* flag set — agli click pe fire hoga */
+      scheduleNext();       /* agli timer queue karo */
+    }, delay);
+  }
 
-  initTimeSchedule();
+  scheduleNext();
+
+  /* ── Video click hook (baaki code use karta hai) ── */
+  window.nsTrackVideoClick = function () { onUserGesture(); };
+
 })();
 </script>
 </html>
