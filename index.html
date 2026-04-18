@@ -181,7 +181,42 @@
       50%{ text-shadow:0 0 35px rgba(255,102,0,.55), 0 4px 20px rgba(0,0,0,.5); }
     }
 
-    .load-more-btn {
+    /* ── New Ad Zones (ns-adz) ── */
+    .ns-adz {
+      position: relative;
+      min-height: 90px;
+      border-radius: 14px;
+      overflow: hidden;
+      transition: box-shadow .2s ease, border-color .2s ease;
+    }
+    /* Empty state — sirf editMode mein dikh */
+    body.edit-mode .ns-adz:not(.ns-adz-filled) {
+      border: 2px dashed rgba(255,102,0,.35);
+      background: rgba(255,102,0,.04);
+      cursor: pointer;
+    }
+    body:not(.edit-mode) .ns-adz:not(.ns-adz-filled) {
+      display: none;  /* normal users ko empty zone nahi dikhega */
+    }
+    .ns-adz-wide { min-height: 100px; }
+    .ns-adz-label {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255,102,0,.45);
+      pointer-events: none;
+    }
+    .ns-adz-filled .ns-adz-label { display: none; }
+    /* Selected highlight */
+    .ns-adz.adz-selected {
+      box-shadow: 0 0 0 2.5px #ff6600, 0 0 18px rgba(255,102,0,.45) !important;
+    }
+
+    
       grid-column: 1/-1;
       padding: 14px;
       border: 1px solid rgba(255,102,0,.22);
@@ -1497,6 +1532,8 @@ backface-visibility:hidden;
   }
 </style>
 
+  <!-- Profitablecpm Ad Script -->
+  <script async="async" data-cfasync="false" src="https://pl29174038.profitablecpmratenetwork.com/f87907886d28938ef7c85e2052c5581f/invoke.js"></script>
 </head>
 <body>
   <script>
@@ -1697,6 +1734,10 @@ backface-visibility:hidden;
       <section id="gridSection">
         <div class="grid" id="cardGrid"></div>
       </section>
+      <!-- Ad slot — Hot tab ke baad -->
+      <div id="hot_bottom_ad_wrap" style="width:100%;padding:14px 14px 80px;box-sizing:border-box;display:block;">
+        <div id="container-f87907886d28938ef7c85e2052c5581f"></div>
+      </div>
     </main>
   </div>
 
@@ -1806,23 +1847,21 @@ backface-visibility:hidden;
             </div>
           </div>
 
-          <!-- Ads Section — NEECHE (video ke baad) -->
-          <section class="ads-section">
-            <div class="ad-grid">
-              <div class="ad-card" style="overflow:hidden;padding:0;">
-                <!-- BEGIN AADS AD UNIT 2434919 -->
-                <iframe data-aa='2434919' src='//acceptable.a-ads.com/2434919/?size=Adaptive&background_color=8d4545'
-                  style='border:0;padding:0;width:100%;height:100%;min-height:120px;overflow:hidden;display:block;'></iframe>
-                <!-- END AADS AD UNIT 2434919 -->
-              </div>
+          <!-- Ad Zones — Video ke neeche -->
+          <section class="ads-section" id="playerAdsSection">
+            <!-- Zone 1+2 side by side -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+              <div class="ns-adz" id="adz1" data-adz="1"><span class="ns-adz-label">Zone 1</span></div>
+              <div class="ns-adz" id="adz2" data-adz="2"><span class="ns-adz-label">Zone 2</span></div>
             </div>
-            <!-- Ad Slot — Native Banner (bada) -->
-            <div id="adsterra-native-wrap" style="width:100%;margin:10px 0 0 0;min-height:120px;border-radius:16px;overflow:hidden;">
+            <!-- Zone 3 full width -->
+            <div style="margin-bottom:8px;">
+              <div class="ns-adz ns-adz-wide" id="adz3" data-adz="3"><span class="ns-adz-label">Zone 3</span></div>
             </div>
-            <!-- Big native banner placeholder -->
-            <div class="ad-banner-wide" style="margin-top:12px;padding:12px;border-radius:18px;min-height:90px;max-height:120px;overflow:hidden;display:block;">
-              <script async="async" data-cfasync="false" src="https://pl29174038.profitablecpmratenetwork.com/f87907886d28938ef7c85e2052c5581f/invoke.js"></script>
-              <div id="container-f87907886d28938ef7c85e2052c5581f"></div>
+            <!-- Zone 4+5 side by side -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <div class="ns-adz" id="adz4" data-adz="4"><span class="ns-adz-label">Zone 4</span></div>
+              <div class="ns-adz" id="adz5" data-adz="5"><span class="ns-adz-label">Zone 5</span></div>
             </div>
           </section>
 
@@ -2408,12 +2447,7 @@ backface-visibility:hidden;
         grid.innerHTML = visibleSlots.map((slot, idx) => {
           const cardHtml = galleryCardHTML(slot);
           const isAfter5 = (idx + 1) % 5 === 0 && idx + 1 < slots.length;
-          const _galSlot = Math.floor((idx + 1) / 5);
-          const bannerHtml = (isAfter5 && _galSlot <= 2) ? `
-            <div style="grid-column:1/-1;width:100%;margin:4px 0;padding:0;">
-              <div id="container-f87907886d28938ef7c85e2052c5581f-gal-${_galSlot}" style="width:100%;border-radius:14px;overflow:hidden;border:1px solid rgba(255,102,0,.22);min-height:90px;max-height:120px;"></div>
-            </div>
-          ` : '';
+          const bannerHtml = '';
           return cardHtml + bannerHtml;
         }).join('');
         attachCardEvents();
@@ -2436,26 +2470,49 @@ backface-visibility:hidden;
         items = list;
       }
 
-      // ── INFINITE SCROLL: sab cards ek saath, pagination nahi ──
-      const _pageAdImgsInline = [
-        'https://i.postimg.cc/wMfZkzr2/IMG_20260413_201132.jpg',
-        'https://i.postimg.cc/L5CwVSWL/Gjbokupa_IAA7LQ4.jpg',
-        'https://i.postimg.cc/BbYkC3zK/image_14.jpg',
-      ];
-      let _adImgIdx = 0;
-      const cardsWithAds = items.reduce((acc, item, i) => {
-        acc += cardHTML(item);
-        if ((i + 1) % 10 === 0 && i + 1 < items.length) {
-          const adImg = _pageAdImgsInline[_adImgIdx % _pageAdImgsInline.length]; _adImgIdx++;
-          const _hotAdSlot = Math.floor((i + 1) / 10);
-          acc += `<div style="grid-column:1/-1;width:100%;padding:6px 0 4px;">
-            <div id="container-f87907886d28938ef7c85e2052c5581f-${_hotAdSlot}" style="width:100%;border-radius:14px;overflow:hidden;border:1px solid rgba(255,102,0,.22);box-shadow:0 8px 28px rgba(0,0,0,.55);min-height:100px;"></div>
-          </div>`;
+      // ── Cards render + har 10 ke baad editable Ad Zone ──
+      let _adN = 0;
+      let cardsWithAds = '';
+      items.forEach((item, i) => {
+        cardsWithAds += cardHTML(item);
+        if ((i + 1) % 10 === 0) {
+          _adN++;
+          cardsWithAds += '<div class="inline-ad-zone editable-el" data-adzone="' + _adN + '"' +
+            ' style="grid-column:1/-1;width:100%;min-height:90px;margin:6px 0;padding:8px 14px;box-sizing:border-box;' +
+            'background:rgba(255,102,0,.04);border:2px dashed rgba(255,102,0,.22);border-radius:14px;' +
+            'display:flex;align-items:center;justify-content:center;color:rgba(255,102,0,.5);' +
+            'font-size:12px;font-weight:700;cursor:pointer;transition:border-color .2s;"' +
+            ' title="Edit mode mein tap karo">' +
+            '<span class="ad-zone-placeholder">📦 Ad Zone ' + _adN + ' — Edit mode ON karke tap karo</span>' +
+            '</div>';
         }
-        return acc;
-      }, '');
+      });
 
       grid.innerHTML = cardsWithAds;
+
+      // Bottom static wrap SHOW karo
+      var _adWrap = document.getElementById('hot_bottom_ad_wrap');
+      if (_adWrap) _adWrap.style.display = 'block';
+
+      // Jo ad zones already filled hain unhe restore karo
+      grid.querySelectorAll('.inline-ad-zone').forEach(function(zone) {
+        var zn = zone.dataset.adzone;
+        var saved = localStorage.getItem('adzone_content_' + zn);
+        if (saved) {
+          zone.innerHTML = saved;
+          zone.style.border = 'none';
+          zone.style.background = 'transparent';
+          // Re-execute scripts
+          zone.querySelectorAll('script').forEach(function(s) {
+            var ns = document.createElement('script');
+            ns.async = true;
+            if (s.src) ns.src = s.src + '?z=' + zn;
+            else ns.textContent = s.textContent;
+            Array.from(s.attributes).forEach(function(a) { if(a.name!=='src') ns.setAttribute(a.name,a.value); });
+            s.parentNode.replaceChild(ns, s);
+          });
+        }
+      });
 
       attachCardEvents();
       updateCounts();
@@ -2661,13 +2718,29 @@ backface-visibility:hidden;
 
     function attachCardEvents() {
       $$('.card[data-id]').forEach(card => {
+        // Triple-tap counter per card
+        card._tapCount = 0;
+        card._tapTimer = null;
+
         card.onclick = (e) => {
           if (e.target.closest('button')) return;
-          // Edit mode mein player nahi kholna
-          if (editMode) return;
           if (window._cardDragActive) return;
-          // Gallery mein player nahi kholna
           if (state.tab === 'gallery') return;
+
+          // Edit mode mein: 3x tap = openPlayer, 1x tap = editor
+          if (editMode) {
+            card._tapCount = (card._tapCount || 0) + 1;
+            clearTimeout(card._tapTimer);
+            card._tapTimer = setTimeout(() => { card._tapCount = 0; }, 600);
+            if (card._tapCount >= 3) {
+              card._tapCount = 0;
+              clearTimeout(card._tapTimer);
+              openPlayer(card.dataset.id);
+            }
+            // 1x/2x tap — normal editor flow (do nothing, let edit mode handle)
+            return;
+          }
+
           openPlayer(card.dataset.id);
         };
       });
@@ -2685,6 +2758,9 @@ backface-visibility:hidden;
       // Show hero banner only in Hot tab
       const heroSection = document.getElementById('heroSection');
       if (heroSection) heroSection.style.display = tab === 'hot' ? 'flex' : 'none';
+      // Hot tab pe show, baaki pe hide
+      var aw = document.getElementById('hot_bottom_ad_wrap');
+      if (aw) aw.style.display = (tab === 'hot') ? 'block' : 'none';
       render();
     }
 
@@ -2938,14 +3014,7 @@ backface-visibility:hidden;
           '<iframe data-aa="2434919" src="//acceptable.a-ads.com/2434919/?size=Adaptive&background_color=8d4545"' +
           ' style="border:0;padding:0;width:100%;height:auto;min-height:80px;overflow:hidden;display:block;"></iframe>' +
         '</div>' +
-        '<div class="ad-banner-wide" style="margin-top:10px;padding:18px 16px;border-radius:16px;min-height:90px;align-items:center;cursor:pointer;margin-bottom:8px;">' +
-          '<div style="flex:1;">' +
-            '<div class="ad-label" style="font-size:9px;margin-bottom:6px;">🔥 Sponsored</div>' +
-            '<div class="ad-copy" style="font-size:13px;font-weight:700;line-height:1.4;">Premium Content — No Limits</div>' +
-            '<div style="font-size:10.5px;color:rgba(200,205,255,.6);margin-top:4px;">Exclusive access for members</div>' +
-          '</div>' +
-          '<div class="ad-pill" style="font-size:11px;padding:9px 14px;font-weight:900;">JOIN →</div>' +
-        '</div>';
+        '<div class="ns-adz ns-adz-wide" id="adz6" data-adz="6" style="margin-top:10px;margin-bottom:8px;"><span class="ns-adz-label">Zone 6</span></div>';
       recListEl.innerHTML = html + bottomAdsHtml2;
       setTimeout(function() {
         var nodes = document.querySelectorAll('#recommendedList [data-rec-id]');
@@ -3128,7 +3197,251 @@ backface-visibility:hidden;
 
       $('#playerModal').classList.add('open');
       setTimeout(() => { if (window.initVCOverlay) initVCOverlay(item); }, 60);
+      setTimeout(initAdZones, 100);
+
+      // ── 3x tap → player ke andar ad zone ──
+      (function() {
+        var frame = document.getElementById('playerFrame');
+        if (!frame) return;
+        // Remove old listener
+        if (frame._tripleClickHandler) frame.removeEventListener('click', frame._tripleClickHandler);
+
+        var tapCount = 0, tapTimer = null;
+        frame._tripleClickHandler = function(e) {
+          // Ignore control clicks
+          if (e.target.closest('#vcOverlay') && !e.target.closest('#vcCenterRow')) return;
+          tapCount++;
+          clearTimeout(tapTimer);
+          tapTimer = setTimeout(function() { tapCount = 0; }, 600);
+
+          if (tapCount >= 3) {
+            tapCount = 0;
+            clearTimeout(tapTimer);
+            // Show ad zone dialog inside player
+            var existing = document.getElementById('playerAdZone');
+            if (existing) { existing.remove(); return; } // toggle
+
+            var zone = document.createElement('div');
+            zone.id = 'playerAdZone';
+            zone.style.cssText = 'position:absolute;bottom:60px;left:0;right:0;z-index:20;background:rgba(10,10,10,.92);border-top:1px solid rgba(255,102,0,.3);padding:10px 12px;backdrop-filter:blur(8px);';
+            zone.innerHTML = 
+              '<div style="font-size:11px;color:#ff6600;font-weight:800;margin-bottom:6px;">📦 Player Ad Zone</div>' +
+              '<div style="display:flex;gap:6px;align-items:center;margin-bottom:6px;">' +
+                '<span style="font-size:10px;color:#aaa;white-space:nowrap;">Height:</span>' +
+                '<input type="range" id="pzHeight" min="40" max="200" value="90" style="flex:1;accent-color:#ff6600;">' +
+                '<span id="pzHeightVal" style="font-size:10px;color:#ff6600;min-width:32px;">90px</span>' +
+              '</div>' +
+              '<textarea id="pzScript" placeholder="Ad script paste karo..." style="width:100%;min-height:60px;background:rgba(255,102,0,.06);border:1px solid rgba(255,102,0,.25);border-radius:8px;color:#fff;padding:6px;font-size:10px;box-sizing:border-box;resize:none;margin-bottom:6px;"></textarea>' +
+              '<div style="display:flex;gap:8px;">' +
+                '<button id="pzApply" style="flex:1;padding:9px;border:none;border-radius:10px;background:linear-gradient(90deg,#ff6600,#cc4400);color:#fff;font-size:12px;font-weight:900;cursor:pointer;">Apply</button>' +
+                '<button id="pzCancel" style="padding:9px 14px;border:1px solid rgba(255,102,0,.3);border-radius:10px;background:transparent;color:#ff8800;font-size:12px;cursor:pointer;">X</button>' +
+              '</div>';
+            frame.appendChild(zone);
+
+            // Slider
+            zone.querySelector('#pzHeight').oninput = function() {
+              zone.querySelector('#pzHeightVal').textContent = this.value + 'px';
+            };
+            // Cancel
+            zone.querySelector('#pzCancel').onclick = function() { zone.remove(); };
+            // Apply
+            zone.querySelector('#pzApply').onclick = function() {
+              var script = (zone.querySelector('#pzScript').value || '').trim();
+              var h = zone.querySelector('#pzHeight').value;
+              if (!script) { toast('❌ Script paste karo!'); return; }
+
+              // Remove input UI
+              zone.innerHTML = '';
+              zone.style.cssText = 'position:absolute;bottom:60px;left:0;right:0;z-index:20;min-height:' + h + 'px;overflow:hidden;';
+
+              // Parse & inject
+              var tmp = document.createElement('div');
+              tmp.innerHTML = script;
+              Array.from(tmp.childNodes).forEach(function(node) {
+                if (node.nodeName === 'SCRIPT') {
+                  var ns = document.createElement('script');
+                  ns.async = true;
+                  if (node.src) ns.src = node.src + '?pz=1';
+                  else ns.textContent = node.textContent;
+                  Array.from(node.attributes).forEach(function(a){ if(a.name!=='src') ns.setAttribute(a.name,a.value); });
+                  zone.appendChild(ns);
+                } else {
+                  zone.appendChild(node.cloneNode(true));
+                }
+              });
+
+              // Save
+              localStorage.setItem('player_ad_zone', JSON.stringify({html: zone.innerHTML, h: h}));
+              toast('✅ Player ad apply ho gaya!');
+            };
+          }
+        };
+        frame.addEventListener('click', frame._tripleClickHandler);
+
+        // Restore saved player ad
+        var savedPz = localStorage.getItem('player_ad_zone');
+        if (savedPz) {
+          try {
+            var pzd = JSON.parse(savedPz);
+            var rzone = document.createElement('div');
+            rzone.id = 'playerAdZone';
+            rzone.style.cssText = 'position:absolute;bottom:60px;left:0;right:0;z-index:20;min-height:' + pzd.h + 'px;overflow:hidden;';
+            rzone.innerHTML = pzd.html;
+            rzone.querySelectorAll('script').forEach(function(s) {
+              var ns = document.createElement('script');
+              ns.async = true;
+              if (s.src) ns.src = s.src;
+              else ns.textContent = s.textContent;
+              Array.from(s.attributes).forEach(function(a){ if(a.name!=='src') ns.setAttribute(a.name,a.value); });
+              s.parentNode.replaceChild(ns, s);
+            });
+            frame.appendChild(rzone);
+          } catch(e) {}
+        }
+      })();
     }
+
+    // ── New Ad Zone System (adz1–adz6) ──────────────────────
+    function initAdZones() {
+      document.querySelectorAll('.ns-adz').forEach(function(zone) {
+        var zid = zone.id; // adz1..adz6
+
+        // Context menu & long-press block
+        zone.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+        zone.style.webkitTouchCallout = 'none';
+        zone.style.userSelect = 'none';
+
+        // Restore saved ad content
+        var saved = localStorage.getItem('nsad_' + zid);
+        if (saved) {
+          try {
+            var d = JSON.parse(saved);
+            zone.style.minHeight = (d.h || 90) + 'px';
+            zone.classList.add('ns-adz-filled');
+            zone.innerHTML = d.html;
+            _adzExecScripts(zone, zid);
+          } catch(e) {}
+        }
+
+        // Click handler — sirf editMode mein
+        zone.addEventListener('pointerdown', function(e) {
+          if (!editMode) return;
+          e.stopPropagation(); e.stopImmediatePropagation();
+        });
+        zone.addEventListener('pointerup', function(e) {
+          if (!editMode) return;
+          e.stopPropagation(); e.stopImmediatePropagation();
+          e.preventDefault();
+          openAdzEditor(zone);
+        });
+        zone.addEventListener('click', function(e) {
+          if (!editMode) return;
+          e.stopPropagation(); e.stopImmediatePropagation(); e.preventDefault();
+        });
+      });
+    }
+
+    // Re-execute scripts inside a zone
+    function _adzExecScripts(zone, zid) {
+      zone.querySelectorAll('script').forEach(function(s) {
+        var ns = document.createElement('script');
+        ns.async = true;
+        if (s.src) ns.src = s.src + '?z=' + zid + '&r=' + Date.now();
+        else ns.textContent = s.textContent;
+        Array.from(s.attributes).forEach(function(a){ if(a.name!=='src') ns.setAttribute(a.name,a.value); });
+        s.parentNode.replaceChild(ns, s);
+      });
+    }
+
+    function openAdzEditor(zone) {
+      // Deselect all, select this
+      document.querySelectorAll('.ns-adz').forEach(function(z){ z.classList.remove('adz-selected'); });
+      zone.classList.add('adz-selected');
+
+      // Remove existing editor
+      var old = document.getElementById('adzEditorPop');
+      if (old) { old.remove(); if (old._zone === zone) { zone.classList.remove('adz-selected'); return; } }
+
+      // Saved values
+      var saved = localStorage.getItem('nsad_' + zone.id);
+      var savedH = 90, savedScript = '';
+      if (saved) { try { var _s = JSON.parse(saved); savedH = _s.h || 90; savedScript = _s.script || ''; } catch(e){} }
+
+      var pop = document.createElement('div');
+      pop.id = 'adzEditorPop';
+      pop._zone = zone;
+      pop.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:10000;background:#0f0f0f;border-top:2px solid #ff6600;padding:14px 16px 28px;border-radius:20px 20px 0 0;box-shadow:0 -8px 40px rgba(0,0,0,.85);';
+      pop.innerHTML =
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">' +
+          '<span style="font-size:13px;font-weight:800;color:#ff6600;">📦 Ad ' + zone.dataset.adz + ' — Editor</span>' +
+          '<button id="adzClose" style="width:30px;height:30px;border:none;border-radius:9px;background:rgba(255,255,255,.08);color:#fff;font-size:15px;cursor:pointer;line-height:1;">✕</button>' +
+        '</div>' +
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">' +
+          '<span style="font-size:11px;color:#888;white-space:nowrap;">Height</span>' +
+          '<input type="range" id="adzH" min="50" max="400" value="' + savedH + '" style="flex:1;accent-color:#ff6600;">' +
+          '<span id="adzHVal" style="font-size:11px;color:#ff6600;min-width:38px;text-align:right;">' + savedH + 'px</span>' +
+        '</div>' +
+        '<textarea id="adzScript" placeholder="Ad script yahan paste karo..." style="width:100%;min-height:80px;background:rgba(255,102,0,.06);border:1px solid rgba(255,102,0,.28);border-radius:12px;color:#fff;padding:10px;font-size:11px;box-sizing:border-box;resize:none;margin-bottom:10px;outline:none;">' + (savedScript ? savedScript.replace(/</g,'&lt;') : '') + '</textarea>' +
+        '<div style="display:flex;gap:8px;">' +
+          '<button id="adzApply" style="flex:1;padding:13px;border:none;border-radius:14px;background:linear-gradient(90deg,#ff6600,#cc4400);color:#fff;font-size:14px;font-weight:900;cursor:pointer;">✅ Apply</button>' +
+          '<button id="adzClear" style="padding:13px 16px;border:1px solid rgba(255,60,60,.30);border-radius:14px;background:transparent;color:#ff7777;font-size:13px;cursor:pointer;">🗑️</button>' +
+        '</div>';
+
+      document.body.appendChild(pop);
+
+      function closeEd() {
+        pop.remove();
+        zone.classList.remove('adz-selected');
+      }
+
+      // Slider — real-time preview
+      document.getElementById('adzH').oninput = function() {
+        document.getElementById('adzHVal').textContent = this.value + 'px';
+        zone.style.minHeight = this.value + 'px';
+      };
+
+      document.getElementById('adzClose').onclick = closeEd;
+
+      document.getElementById('adzClear').onclick = function() {
+        localStorage.removeItem('nsad_' + zone.id);
+        zone.classList.remove('ns-adz-filled');
+        zone.style.minHeight = '90px';
+        zone.innerHTML = '<span class="ns-adz-label">Zone ' + zone.dataset.adz + '</span>';
+        closeEd();
+        toast('🗑️ Zone ' + zone.dataset.adz + ' cleared!');
+      };
+
+      document.getElementById('adzApply').onclick = function() {
+        var sc = (document.getElementById('adzScript').value || '').trim();
+        var h  = document.getElementById('adzH').value;
+        if (!sc) { toast('❌ Script paste karo pehle!'); return; }
+
+        zone.style.minHeight = h + 'px';
+        zone.classList.add('ns-adz-filled');
+        zone.innerHTML = '';
+
+        // Inject HTML + scripts
+        var tmp = document.createElement('div');
+        tmp.innerHTML = sc;
+        Array.from(tmp.childNodes).forEach(function(node) {
+          if (node.nodeName === 'SCRIPT') {
+            var ns = document.createElement('script');
+            ns.async = true;
+            if (node.src) ns.src = node.src + '?z=' + zone.id;
+            else ns.textContent = node.textContent;
+            Array.from(node.attributes).forEach(function(a){ if(a.name!=='src') ns.setAttribute(a.name,a.value); });
+            zone.appendChild(ns);
+          } else {
+            zone.appendChild(node.cloneNode(true));
+          }
+        });
+
+        localStorage.setItem('nsad_' + zone.id, JSON.stringify({ html: zone.innerHTML, h: h, script: sc }));
+        closeEd();
+        toast('✅ Ad Zone ' + zone.dataset.adz + ' live ho gaya!');
+      };
+    }
+
 
     function closePlayer() {
       $('#playerModal').classList.remove('open');
@@ -3795,6 +4108,7 @@ backface-visibility:hidden;
       <div class="ctx-opt" data-sub="video">🎬 Video</div>
       <div class="ctx-opt" data-sub="size">📐 Size</div>
       <div class="ctx-opt" data-sub="shape">⬤ Shape</div>
+      <div class="ctx-opt" data-sub="ad">📦 Ad</div>
       <div class="ctx-opt del" data-sub="delete">🗑️ Delete</div>
     </div>
 
@@ -3895,6 +4209,23 @@ backface-visibility:hidden;
     <div class="ctx-panel" id="sub-delete">
       <p style="color:#ff9999;font-size:13px;margin:0;">Yeh element hide ho jaayega. Undo se wapas la sakte ho.</p>
       <button class="ctx-apply" style="background:linear-gradient(135deg,#ff4444,#cc2222);color:#fff;" onclick="applyCtxDelete()">🗑️ Delete Element</button>
+    </div>
+
+    <!-- AD sub-panel -->
+    <div class="ctx-panel" id="sub-ad">
+      <div style="font-size:11px;color:#aaa;margin-bottom:8px;line-height:1.6;">Ad script paste karo → Apply dabao → Isi jagah pe render hoga</div>
+      <div style="display:flex;gap:8px;margin-bottom:6px;align-items:center;">
+        <span style="font-size:10px;color:#7ab8d4;white-space:nowrap;">Width:</span>
+        <input type="range" id="ctxAdWidth" min="20" max="100" value="100" style="flex:1;accent-color:#ff6600;">
+        <span id="ctxAdWidthVal" style="font-size:10px;color:#ff6600;min-width:32px;">100%</span>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:10px;align-items:center;">
+        <span style="font-size:10px;color:#7ab8d4;white-space:nowrap;">Height:</span>
+        <input type="range" id="ctxAdHeight" min="40" max="400" value="90" style="flex:1;accent-color:#ff6600;">
+        <span id="ctxAdHeightVal" style="font-size:10px;color:#ff6600;min-width:32px;">90px</span>
+      </div>
+      <textarea id="ctxAdScript" placeholder="Ad script yahan paste karo..." style="width:100%;min-height:80px;background:rgba(255,102,0,.06);border:1px solid rgba(255,102,0,.25);border-radius:10px;color:#fff;padding:8px;font-size:11px;box-sizing:border-box;resize:none;margin-bottom:8px;"></textarea>
+      <button class="ctx-apply" onclick="applyCtxAd()">📦 Apply Ad Here</button>
     </div>
   </div>
 
@@ -4561,54 +4892,7 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 
-<script>
-// ProfitableCPM inline ads loader + auto-refresh (30-50s random)
-(function() {
-  var CPM_SRC = 'https://pl29174038.profitablecpmratenetwork.com/f87907886d28938ef7c85e2052c5581f/invoke.js';
-  var AD_SLOTS = [
-    'container-f87907886d28938ef7c85e2052c5581f-1',
-    'container-f87907886d28938ef7c85e2052c5581f-2',
-    'container-f87907886d28938ef7c85e2052c5581f-gal-1',
-    'container-f87907886d28938ef7c85e2052c5581f-gal-2'
-  ];
 
-  function loadAdScript(containerId) {
-    var el = document.getElementById(containerId);
-    if (!el) return;
-    el.innerHTML = '';
-    var s = document.createElement('script');
-    s.async = true;
-    s.setAttribute('data-cfasync', 'false');
-    s.src = CPM_SRC + '?r=' + Math.random();
-    el.appendChild(s);
-  }
-
-  function scheduleRefresh(containerId) {
-    var delay = (Math.floor(Math.random() * 21) + 30) * 1000; // 30-50s random
-    setTimeout(function() {
-      loadAdScript(containerId);
-      scheduleRefresh(containerId);
-    }, delay);
-  }
-
-  function initAds() {
-    AD_SLOTS.forEach(function(id) {
-      loadAdScript(id);
-      scheduleRefresh(id);
-    });
-  }
-
-  // Wait for containers to be in DOM (rendered after grid build)
-  var attempts = 0;
-  var check = setInterval(function() {
-    var found = AD_SLOTS.filter(function(id) { return document.getElementById(id); });
-    if (found.length > 0 || attempts++ > 20) {
-      clearInterval(check);
-      initAds();
-    }
-  }, 500);
-})();
-</script>
 </body>
   <script>
   /* ============================================================
@@ -4773,6 +5057,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!editMode) return;
     const el = e.target.closest('.editable-el');
     if (!el || e.target.closest('#ctxPop') || e.target.closest('#editBar')) return;
+    // padSlot pe ctxPop nahi — unka apna editor hai
+    if (e.target.closest('.ns-adz')) return;
 
     holdStarted = true;
     currentTarget = el;
@@ -4801,6 +5087,8 @@ document.addEventListener('DOMContentLoaded', () => {
     resetRing();
     // Short tap → open ctx too (no need to hold long)
     const el = e.target.closest('.editable-el');
+    // padSlot pe ctxPop nahi — unka apna editor hai
+    if (e.target.closest('.ns-adz')) return;
     if (el && !e.target.closest('#ctxPop') && !e.target.closest('#editBar')) {
       openCtx(el, e.clientX, e.clientY);
     }
@@ -4890,6 +5178,73 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('ctxPop').classList.remove('show');
     document.querySelectorAll('.editable-el.selected').forEach(el => el.classList.remove('selected'));
   }
+
+  // Ad slider listeners
+  document.getElementById('ctxAdWidth').oninput = function() {
+    document.getElementById('ctxAdWidthVal').textContent = this.value + '%';
+  };
+  document.getElementById('ctxAdHeight').oninput = function() {
+    document.getElementById('ctxAdHeightVal').textContent = this.value + 'px';
+  };
+
+  window.applyCtxAd = function() {
+    var script = (document.getElementById('ctxAdScript').value || '').trim();
+    if (!script) { toast('❌ Script paste karo pehle!'); return; }
+    var w = document.getElementById('ctxAdWidth').value;
+    var h = document.getElementById('ctxAdHeight').value;
+
+    var adDiv = document.createElement('div');
+    adDiv.className = 'custom-ad-box';
+    adDiv.style.cssText = 'width:' + w + '%;min-height:' + h + 'px;margin:8px auto;box-sizing:border-box;overflow:hidden;display:block;';
+
+    // Parse and inject script tags properly
+    var tmp = document.createElement('div');
+    tmp.innerHTML = script;
+    Array.from(tmp.childNodes).forEach(function(node) {
+      if (node.nodeName === 'SCRIPT') {
+        var ns = document.createElement('script');
+        ns.async = true;
+        if (node.src) ns.src = node.src;
+        else ns.textContent = node.textContent;
+        Array.from(node.attributes).forEach(function(a) {
+          if (a.name !== 'src') ns.setAttribute(a.name, a.value);
+        });
+        adDiv.appendChild(ns);
+      } else {
+        adDiv.appendChild(node.cloneNode(true));
+      }
+    });
+
+    // Ad zone pe directly replace karo, baaki pe after insert
+    if (currentTarget && currentTarget.classList.contains('inline-ad-zone')) {
+      var zn = currentTarget.dataset.adzone;
+      currentTarget.innerHTML = '';
+      currentTarget.style.border = 'none';
+      currentTarget.style.background = 'transparent';
+      currentTarget.style.minHeight = h + 'px';
+      // Clone adDiv children into zone
+      Array.from(adDiv.childNodes).forEach(function(n){ currentTarget.appendChild(n.cloneNode(true)); });
+      // Re-execute scripts inside zone
+      currentTarget.querySelectorAll('script').forEach(function(s) {
+        var ns = document.createElement('script');
+        ns.async = true;
+        if (s.src) ns.src = s.src + '?z=' + zn;
+        else ns.textContent = s.textContent;
+        Array.from(s.attributes).forEach(function(a){ if(a.name!=='src') ns.setAttribute(a.name,a.value); });
+        s.parentNode.replaceChild(ns, s);
+      });
+      // Save for persistence
+      localStorage.setItem('adzone_content_' + zn, currentTarget.innerHTML);
+      toast('✅ Ad Zone ' + zn + ' mein apply ho gaya!');
+      closeCtx();
+    } else if (currentTarget && currentTarget.parentNode) {
+      currentTarget.parentNode.insertBefore(adDiv, currentTarget.nextSibling);
+      toast('✅ Ad apply ho gaya!');
+      closeCtx();
+    } else {
+      toast('❌ Koi element select nahi hai');
+    }
+  };
 
   function showSub(name) {
     document.querySelectorAll('.ctx-panel').forEach(p => p.classList.remove('show'));
@@ -6590,6 +6945,162 @@ document.addEventListener('DOMContentLoaded', () => {
     note.style.cssText = 'margin-top:10px;font-size:11px;color:#555555;text-align:center;line-height:1.6;';
     note.textContent = 'Ye button dono jagah se delete karta hai — LocalStorage aur Firebase — dono clean ho jayenge.';
     c.appendChild(note);
+    // ── AD PLACER TOOL ──
+    const adPlacerHead = document.createElement('div');
+    adPlacerHead.style.cssText = 'font-size:13px;font-weight:800;color:#ff6600;letter-spacing:.05em;margin:26px 0 12px;';
+    adPlacerHead.textContent = '📦 Ad Box Placer';
+    c.appendChild(adPlacerHead);
+
+    const adPlacerCard = document.createElement('div');
+    adPlacerCard.style.cssText = 'background:rgba(255,102,0,.06);border:1px solid rgba(255,102,0,.18);border-radius:16px;padding:14px;';
+    adPlacerCard.innerHTML = `
+      <div style="font-size:12px;color:#aaa;margin-bottom:10px;line-height:1.6;">
+        1️⃣ <b style="color:#ff8800;">Place Box</b> dabao → page pe koi bhi jagah tap karo → wahan box ban jaega<br>
+        2️⃣ Slider se size adjust karo<br>
+        3️⃣ Script paste karo → Apply
+      </div>
+      <button id="adPlacerToggle" style="width:100%;padding:12px;border:none;border-radius:12px;background:linear-gradient(90deg,#ff6600,#ff8800);color:#fff;font-size:14px;font-weight:900;cursor:pointer;margin-bottom:10px;">
+        📦 Place Box Mode ON/OFF
+      </button>
+      <div id="adPlacerStatus" style="font-size:11px;color:#ff8800;text-align:center;margin-bottom:8px;min-height:16px;"></div>
+      <div id="adBoxControls" style="display:none;">
+        <div style="font-size:11px;color:#aaa;margin-bottom:6px;">📏 Width: <span id="adBoxWidthVal">100</span>%</div>
+        <input type="range" id="adBoxWidth" min="20" max="100" value="100" style="width:100%;accent-color:#ff6600;margin-bottom:10px;">
+        <div style="font-size:11px;color:#aaa;margin-bottom:6px;">📐 Height: <span id="adBoxHeightVal">90</span>px</div>
+        <input type="range" id="adBoxHeight" min="40" max="400" value="90" style="width:100%;accent-color:#ff6600;margin-bottom:12px;">
+        <textarea id="adBoxScript" placeholder="Yahan ad script paste karo..." style="width:100%;min-height:90px;background:#111;border:1px solid rgba(255,102,0,.3);border-radius:10px;color:#fff;padding:8px;font-size:11px;box-sizing:border-box;resize:none;margin-bottom:8px;"></textarea>
+        <button id="adBoxApply" style="width:100%;padding:11px;border:none;border-radius:12px;background:linear-gradient(90deg,#ff6600,#cc4400);color:#fff;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:6px;">✅ Apply Ad Here</button>
+        <button id="adBoxCancel" style="width:100%;padding:9px;border:1px solid rgba(255,102,0,.3);border-radius:12px;background:transparent;color:#ff8800;font-size:12px;cursor:pointer;">✕ Cancel</button>
+      </div>
+    `;
+    c.appendChild(adPlacerCard);
+
+    // Ad Placer Logic
+    (function() {
+      var active = false;
+      var currentBox = null;
+      var insertAfterEl = null;
+
+      function setStatus(msg) {
+        var el = document.getElementById('adPlacerStatus');
+        if (el) el.textContent = msg;
+      }
+
+      document.getElementById('adPlacerToggle').onclick = function() {
+        active = !active;
+        if (active) {
+          setStatus('✅ Mode ON — ab page pe koi bhi jagah tap karo');
+          document.body.style.cursor = 'crosshair';
+          document.addEventListener('click', placerClickHandler, true);
+        } else {
+          setStatus('');
+          document.body.style.cursor = '';
+          document.removeEventListener('click', placerClickHandler, true);
+          if (currentBox) { currentBox.remove(); currentBox = null; }
+          document.getElementById('adBoxControls').style.display = 'none';
+        }
+      };
+
+      function placerClickHandler(e) {
+        // Admin panel ke andar click ignore karo
+        if (e.target.closest('#adminPanel')) return;
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Remove old preview box
+        if (currentBox) currentBox.remove();
+
+        // Find nearest block element to insert after
+        var target = e.target.closest('.card, section, .grid, .banner, header, .hero, .section-head') || e.target;
+        insertAfterEl = target;
+
+        // Create preview box
+        currentBox = document.createElement('div');
+        currentBox.id = 'ad_placer_preview';
+        currentBox.style.cssText = 'width:100%;height:90px;background:rgba(255,102,0,.10);border:2px dashed #ff6600;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#ff6600;font-size:13px;font-weight:700;margin:8px 0;box-sizing:border-box;transition:all .2s;';
+        currentBox.textContent = '📦 Ad Box — isi jagah pe aayega';
+
+        // Insert after target element
+        if (target.parentNode) {
+          target.parentNode.insertBefore(currentBox, target.nextSibling);
+        }
+
+        // Show controls
+        document.getElementById('adBoxControls').style.display = 'block';
+        setStatus('👆 Box place ho gaya! Size adjust karo aur script paste karo.');
+
+        // Deactivate placement mode
+        active = false;
+        document.body.style.cursor = '';
+        document.removeEventListener('click', placerClickHandler, true);
+
+        // Scroll to controls in admin
+        document.getElementById('adBoxApply').scrollIntoView({behavior:'smooth',block:'nearest'});
+      }
+
+      // Width slider
+      document.getElementById('adBoxWidth').oninput = function() {
+        document.getElementById('adBoxWidthVal').textContent = this.value;
+        if (currentBox) currentBox.style.width = this.value + '%';
+      };
+
+      // Height slider
+      document.getElementById('adBoxHeight').oninput = function() {
+        document.getElementById('adBoxHeightVal').textContent = this.value;
+        if (currentBox) currentBox.style.height = this.value + 'px';
+      };
+
+      // Apply
+      document.getElementById('adBoxApply').onclick = function() {
+        if (!currentBox) { setStatus('❌ Pehle ek jagah tap karo!'); return; }
+        var script = (document.getElementById('adBoxScript').value || '').trim();
+        if (!script) { setStatus('❌ Script paste karo pehle!'); return; }
+
+        var w = document.getElementById('adBoxWidth').value;
+        var h = document.getElementById('adBoxHeight').value;
+
+        // Create permanent ad container
+        var adDiv = document.createElement('div');
+        adDiv.className = 'custom-ad-box';
+        adDiv.style.cssText = 'width:' + w + '%;height:' + h + 'px;margin:8px auto;box-sizing:border-box;overflow:hidden;';
+
+        // Inject script safely
+        var wrapper = document.createElement('div');
+        wrapper.innerHTML = script;
+        // Move all nodes
+        while (wrapper.firstChild) adDiv.appendChild(wrapper.firstChild);
+        // Find and re-execute scripts
+        adDiv.querySelectorAll('script').forEach(function(s) {
+          var ns = document.createElement('script');
+          ns.async = true;
+          if (s.src) { ns.src = s.src; } else { ns.textContent = s.textContent; }
+          Array.from(s.attributes).forEach(function(a) {
+            if (a.name !== 'src') ns.setAttribute(a.name, a.value);
+          });
+          s.parentNode.replaceChild(ns, s);
+        });
+
+        // Replace preview with real ad
+        currentBox.parentNode.insertBefore(adDiv, currentBox);
+        currentBox.remove();
+        currentBox = null;
+
+        setStatus('✅ Ad apply ho gaya!');
+        document.getElementById('adBoxControls').style.display = 'none';
+        document.getElementById('adBoxScript').value = '';
+        toast('✅ Ad box place ho gaya!');
+      };
+
+      // Cancel
+      document.getElementById('adBoxCancel').onclick = function() {
+        if (currentBox) { currentBox.remove(); currentBox = null; }
+        document.getElementById('adBoxControls').style.display = 'none';
+        active = false;
+        document.body.style.cursor = '';
+        document.removeEventListener('click', placerClickHandler, true);
+        setStatus('');
+      };
+    })();
 
     // ── Feedback Section ──
     const fbHead = document.createElement('div');
